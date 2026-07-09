@@ -338,39 +338,216 @@ CREATE TABLE contacts (
 
 ## 🔄 How to Use with Spec Kit
 
-### 1. Constitution
+This section describes the step-by-step workflow to implement this project using GitHub's Spec Kit framework with AI-assisted development.
+
+### Step 1: Establish Project Principles
+
+**Command:**
 ```bash
-/speckit.constitution Apply the principles above (Quality, Security, Performance, UX, Maintainability)
+/speckit.constitution
 ```
 
-### 2. Specify
+**What it does:**
+- Creates or updates `CONSTITUTION.md`
+- Defines non-negotiable principles that guide ALL implementation
+- Includes: Code Quality (80% coverage), Security (validation), Performance (< 200ms), UX (responsive), Maintainability (clear code)
+
+**Reference:** Apply the 5 core principles above:
+- ✅ Code Quality: 80% test coverage, TypeScript, no console.log, lint clean
+- ✅ Security: Validate all inputs, no SQL injection, no XSS
+- ✅ Performance: API < 200ms, load < 3s, optimize queries
+- ✅ User Experience: 3-click navigation, responsive, WCAG 2.1 AA
+- ✅ Maintainability: Well-documented, reusable components, clear concerns
+
+---
+
+### Step 2: Define What You're Building
+
+**Command:**
 ```bash
-/speckit.specify Create a personal contact management system with:
-- Form to create/edit contacts (Name, Email, Phone, Date of Birth)
-- Contact list with search, filters, and pagination
-- Edit and delete contacts with confirmation
-- Data saved in localStorage
-- Real-time validation
-- Responsive and intuitive design
+/speckit.specify
 ```
 
-### 3. Plan
+**What it does:**
+- Creates or updates `SPECIFICATION.md`
+- Defines exact features and acceptance criteria
+- Describes data models, API endpoints, success metrics
+- Non-technical requirements become implementation requirements
+
+**Specification for this project:**
+- Create personal contact management system
+- Features:
+  - Form to create/edit contacts (Name, Email, Phone, Date of Birth)
+  - Contact list with search, filters, and pagination
+  - Edit and delete contacts with confirmation
+  - Data saved in database (PostgreSQL)
+  - Real-time validation (Zod + React Hook Form)
+  - Responsive and intuitive design (mobile, tablet, desktop)
+- Acceptance Criteria: All CRUD operations work, < 200ms search, WCAG accessible
+
+---
+
+### Step 3: Define How You're Building It
+
+**Command:**
 ```bash
-/speckit.plan Frontend with React 18 + TypeScript + Vite + Tailwind CSS
-- State management with React Context
-- Validation with React Hook Form + Zod
-- localStorage for persistence
-- Modular and reusable components
+/speckit.plan Full-Stack Application with:
+- Backend: Java 21 + Spring Boot 3.x + Maven + Spring Data JPA + Hibernate
+- Frontend: React 18 + TypeScript + Vite + Tailwind CSS
+- State Management: React Context API
+- Validation: React Hook Form + Zod (frontend), Jakarta Bean Validation (backend)
+- Database: PostgreSQL 15+ via Docker
+- HTTP Client: Axios (frontend)
+- Testing: Vitest + React Testing Library (frontend), JUnit 5 + Testcontainers (backend)
+- Infrastructure: Docker + Docker Compose for local development
 ```
 
-### 4. Tasks
+**What it does:**
+- Creates or updates `IMPLEMENTATION_PLAN.md`
+- Defines complete tech stack (frontend + backend + database)
+- Describes project structure, architecture decisions, development workflow
+- Outlines testing strategy and tools for both layers
+
+**Resulting Tech Stack:**
+- **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS
+  - State management: React Context API
+  - Validation: React Hook Form + Zod
+  - HTTP: Axios
+  - Testing: Vitest + React Testing Library
+- **Backend:** Java 21 + Spring Boot 3.x + Maven
+  - ORM: Spring Data JPA + Hibernate
+  - Database: PostgreSQL 15+
+  - Validation: Jakarta Bean Validation
+  - Testing: JUnit 5 + Testcontainers
+  - Logging: SLF4J + Logback
+- **Infrastructure:** Docker + Docker Compose (local development)
+  - All services orchestrated: PostgreSQL, backend, frontend
+
+---
+
+### Step 4: Break Down Into Actionable Tasks
+
+**Command:**
 ```bash
 /speckit.tasks
 ```
 
-### 5. Implement
+**What it does:**
+- Creates or updates `TASKS.md`
+- Breaks down work into 12 manageable tasks
+- Each task has: duration, priority, dependencies, acceptance criteria
+
+**Task List for this project (64 hours total):**
+- Backend (TASK-001 to 004): 16 hours
+  - Project setup, entity/repo, service layer, REST API
+- Frontend (TASK-005 to 010): 32 hours
+  - Project setup, components, hooks, validation, listing, edit/delete
+- Testing & Integration (TASK-011 to 012): 18 hours
+  - E2E testing (80%+ coverage), Docker & documentation
+
+---
+
+### Step 5: Generate GitHub Issues (Optional)
+
+**Command:**
 ```bash
-/speckit.implement
+/speckit.taskstoissues
+```
+
+**What it does:**
+- Converts `TASKS.md` into GitHub Issues
+- One issue per task, linked with milestones/labels
+- Enables tracking and team collaboration
+
+---
+
+### Step 6: Implement All Tasks with AI Assistance
+
+**Command (per task):**
+```bash
+/speckit.implement <TASK_ID>
+```
+
+**Workflow for each task:**
+1. Read task description from `TASKS.md`
+2. Reference `SPECIFICATION.md` (what needs to work)
+3. Reference `IMPLEMENTATION_PLAN.md` (how to build it)
+4. Reference `CONSTITUTION.md` (quality standards)
+5. Ask Claude/AI assistant for help (with Spec Kit context)
+6. Verify implementation against acceptance criteria
+7. Move to next task
+
+**Example: Implementing TASK-001 (Backend Setup)**
+```bash
+# I'm doing TASK-001: Backend project setup (2h)
+# Reference: /spec-kit-files/SPECIFICATION.md (what we're building)
+# Reference: /spec-kit-files/IMPLEMENTATION_PLAN.md (tech stack)
+# Reference: /spec-kit-files/CONSTITUTION.md (quality standards)
+
+# Requirements:
+# - Spring Boot 3.x project with Java 21
+# - Maven build tool
+# - PostgreSQL connection configured
+# - Flyway migrations setup
+# - Docker & docker-compose
+
+# Ask Claude: "I'm implementing TASK-001 per my Spec Kit files.
+# Create pom.xml, application.yml, Dockerfile, ContactManagerApplication.java
+# following CONSTITUTION.md principles (explicit types, SLF4J logging, ready for testing)"
+```
+
+---
+
+### Step 7: Converge & Review Against Spec
+
+**Command (after implementation):**
+```bash
+/speckit.converge
+```
+
+**What it does:**
+- Assesses built codebase against CONSTITUTION/SPECIFICATION/PLAN/TASKS
+- Identifies any gaps or remaining work
+- Appends incomplete work as new tasks
+- Verifies quality metrics are met
+
+**Verification checklist:**
+- ✅ All acceptance criteria from SPECIFICATION.md met
+- ✅ 80%+ test coverage (CONSTITUTION.md)
+- ✅ No console.log in production (CONSTITUTION.md)
+- ✅ API < 200ms performance (CONSTITUTION.md)
+- ✅ Responsive design on mobile/tablet/desktop (CONSTITUTION.md)
+- ✅ Code is well-documented (CONSTITUTION.md)
+- ✅ All 12 tasks completed (TASKS.md)
+
+---
+
+## 💡 How This Workflow Prevents Issues
+
+| Problem | Spec Kit Solution |
+|---------|-------------------|
+| Vague requirements | SPECIFICATION.md defines exact features |
+| Quality degradation | CONSTITUTION.md enforces non-negotiables |
+| Architecture confusion | IMPLEMENTATION_PLAN.md defines HOW |
+| Scope creep | TASKS.md + SPECIFICATION.md bound the scope |
+| Lost context | All docs stay in git, reviewed in PRs |
+| Misaligned development | AI knows the spec, implements consistently |
+
+---
+
+## 🚀 Quick Start Command
+
+All-in-one initialization (interactive):
+```bash
+spec-kit init --here
+
+# Then answer prompts:
+# Project name: Personal Contact Manager Application
+# Description: Web application for managing personal contacts with persistent data storage
+# Your name: Daniel Augusto Smanioto
+# Your email: daniel.smanioto@gmail.com
+
+# This creates: CONSTITUTION.md, SPECIFICATION.md, IMPLEMENTATION_PLAN.md, TASKS.md
 ```
 
 ---
