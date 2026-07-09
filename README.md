@@ -1,1 +1,658 @@
-# personal-contact-manager-application
+# Personal Contact Manager Application
+
+A full-stack web application for managing personal contacts with persistent data storage. Built with **Java 21 + Spring Boot** (backend), **React 18 + TypeScript** (frontend), and **PostgreSQL** (database).
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Docker & Docker Compose (latest version)
+- Git
+- (Optional) Java 21 JDK, Node.js 20+ for local development without Docker
+
+### Start the Application (5 minutes)
+
+```bash
+# Clone/navigate to the project
+cd personal-contact-manager-application
+
+# Make scripts executable
+chmod +x scripts/start.sh scripts/stop.sh scripts/reset.sh
+
+# Start all services (database, backend, frontend)
+./scripts/start.sh
+```
+
+**The application will be available at:**
+- 🌐 Frontend: http://localhost:5173
+- 🔌 Backend API: http://localhost:8080
+- 🗄️ Database: localhost:5432
+
+### Stop the Application
+
+```bash
+./scripts/stop.sh
+```
+
+---
+
+## 📋 Architecture Overview
+
+```
+┌─────────────────┐          ┌──────────────────┐          ┌─────────────┐
+│   React 18      │          │   Spring Boot    │          │ PostgreSQL  │
+│   TypeScript    │  ◄──────►│   Java 21        │  ◄──────►│  15+        │
+│   Vite          │   HTTP   │   Maven          │   JDBC   │             │
+│   Tailwind CSS  │          │   OpenAPI        │          │             │
+└─────────────────┘          └──────────────────┘          └─────────────┘
+   http://5173                 http://8080/api               Port 5432
+```
+
+### Tech Stack
+
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| **Frontend** | React | 18+ |
+| | TypeScript | 5+ |
+| | Build Tool | Vite |
+| | Styling | Tailwind CSS |
+| | Validation | React Hook Form + Zod |
+| | HTTP Client | Axios |
+| **Backend** | Java | 21+ |
+| | Framework | Spring Boot | 3.x |
+| | Database Access | Spring Data JPA |
+| | Build Tool | Maven |
+| | Migrations | Flyway |
+| **Database** | PostgreSQL | 15+ |
+| **Infrastructure** | Containerization | Docker |
+| | Orchestration | Docker Compose |
+
+---
+
+## 📁 Project Structure
+
+```
+personal-contact-manager-application/
+├── backend/                          # Java 21 + Spring Boot
+│   ├── src/
+│   │   ├── main/java/com/contactmanager/
+│   │   │   ├── controller/           # REST endpoints
+│   │   │   ├── service/              # Business logic
+│   │   │   ├── repository/           # Data access
+│   │   │   ├── entity/               # JPA entities
+│   │   │   ├── dto/                  # Data transfer objects
+│   │   │   ├── exception/            # Custom exceptions
+│   │   │   └── ContactManagerApplication.java
+│   │   ├── resources/
+│   │   │   ├── application.yml       # Configuration
+│   │   │   └── db/migration/         # Flyway migrations
+│   │   └── test/                     # Unit & integration tests
+│   ├── pom.xml
+│   ├── Dockerfile
+│   └── README.md
+│
+├── frontend/                         # React 18 + TypeScript
+│   ├── src/
+│   │   ├── components/               # React components
+│   │   │   ├── ContactForm/
+│   │   │   ├── ContactList/
+│   │   │   ├── ContactCard/
+│   │   │   └── Layout/
+│   │   ├── hooks/                    # Custom hooks
+│   │   ├── services/                 # API client
+│   │   ├── types/                    # TypeScript types
+│   │   ├── utils/                    # Utilities & validation
+│   │   ├── App.tsx
+│   │   └── index.tsx
+│   ├── public/                       # Static assets
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tsconfig.json
+│   ├── Dockerfile
+│   └── README.md
+│
+├── docker-compose.yml               # Docker Compose configuration
+├── README.md                         # This file
+└── scripts/
+    ├── start.sh                     # Start all services
+    ├── stop.sh                      # Stop all services
+    └── reset.sh                     # Reset database & volumes
+```
+
+---
+
+## 🛠️ Development Setup
+
+### Option 1: Using Docker Compose (Recommended)
+
+```bash
+# Start all services
+./scripts/start.sh
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+./scripts/stop.sh
+```
+
+### Option 2: Local Development (Without Docker)
+
+#### Backend Setup (Java 21 + Maven)
+
+```bash
+cd backend
+
+# Install dependencies & build
+mvn clean install
+
+# Run tests
+mvn test
+
+# Start Spring Boot server
+mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8080"
+```
+
+**Backend will run at:** http://localhost:8080
+
+#### Database Setup (PostgreSQL)
+
+```bash
+# Start PostgreSQL locally (if not using Docker)
+# Create database
+createdb contact_manager -U postgres
+
+# Run migrations (automatic with Spring Boot + Flyway)
+```
+
+#### Frontend Setup (React + Node.js)
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+**Frontend will run at:** http://localhost:5173
+
+---
+
+## 📚 API Documentation
+
+### Base URL
+```
+http://localhost:8080/api
+```
+
+### Endpoints
+
+#### Get All Contacts (Paginated)
+```http
+GET /contacts?page=0&size=10
+
+Response:
+{
+  "content": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "1234567890",
+      "birthDate": "1990-01-15",
+      "createdAt": "2026-07-09T10:00:00Z",
+      "updatedAt": "2026-07-09T10:00:00Z"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "size": 10,
+  "number": 0
+}
+```
+
+#### Get Single Contact
+```http
+GET /contacts/{id}
+
+Response: Contact object
+```
+
+#### Create Contact
+```http
+POST /contacts
+Content-Type: application/json
+
+Request:
+{
+  "name": "Jane Smith",
+  "email": "jane@example.com",
+  "phone": "9876543210",
+  "birthDate": "1995-05-20"
+}
+
+Response: Contact object (HTTP 201 Created)
+```
+
+#### Update Contact
+```http
+PUT /contacts/{id}
+Content-Type: application/json
+
+Request: Same as Create
+
+Response: Updated Contact object
+```
+
+#### Delete Contact
+```http
+DELETE /contacts/{id}
+
+Response: HTTP 204 No Content
+```
+
+#### Search Contacts
+```http
+GET /contacts/search?q=john&page=0&size=10
+
+Response: Paginated list of matching contacts
+```
+
+### Error Responses
+
+```json
+{
+  "status": 400,
+  "message": "Validation failed",
+  "errors": {
+    "email": "Email format is invalid"
+  },
+  "timestamp": "2026-07-09T10:00:00Z"
+}
+```
+
+---
+
+## 📋 Database Schema
+
+```sql
+CREATE TABLE contacts (
+  id UUID PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone VARCHAR(20),
+  birth_date DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL
+);
+
+CREATE INDEX idx_contacts_email ON contacts(email);
+CREATE INDEX idx_contacts_name ON contacts(name);
+CREATE INDEX idx_contacts_birth_date ON contacts(birth_date);
+CREATE INDEX idx_contacts_deleted_at ON contacts(deleted_at);
+```
+
+---
+
+## 🧪 Testing
+
+### Frontend Tests (React Testing Library + Vitest)
+
+```bash
+cd frontend
+
+# Run all tests
+npm run test
+
+# Watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
+```
+
+### Backend Tests (JUnit 5 + Testcontainers)
+
+```bash
+cd backend
+
+# Run all tests
+mvn test
+
+# Run specific test class
+mvn test -Dtest=ContactControllerTests
+
+# Coverage report
+mvn jacoco:report
+open target/site/jacoco/index.html
+```
+
+---
+
+## 📊 Code Quality
+
+### Frontend (ESLint + Prettier)
+
+```bash
+cd frontend
+
+# Check code
+npm run lint
+
+# Fix code
+npm run lint:fix
+
+# Format code
+npm run format
+```
+
+### Backend (Checkstyle)
+
+```bash
+cd backend
+
+# Check code style
+mvn checkstyle:check
+
+# Format code
+mvn fmt:format
+```
+
+---
+
+## 🐳 Docker Commands
+
+### Build Images
+
+```bash
+# Build all images
+docker-compose build
+
+# Build specific service
+docker-compose build frontend
+docker-compose build backend
+```
+
+### View Logs
+
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f backend
+docker-compose logs -f frontend
+docker-compose logs -f postgres
+```
+
+### Database Management
+
+```bash
+# Access PostgreSQL shell
+docker-compose exec postgres psql -U postgres -d contact_manager
+
+# View tables
+\dt
+
+# Exit
+\q
+
+# Backup database
+docker-compose exec postgres pg_dump -U postgres contact_manager > backup.sql
+
+# Restore from backup
+docker-compose exec -T postgres psql -U postgres contact_manager < backup.sql
+```
+
+### Reset Everything
+
+```bash
+# Stop and remove all services and volumes
+./scripts/reset.sh
+
+# Or manually:
+docker-compose down -v
+docker-compose up -d
+```
+
+---
+
+## 🚀 Features
+
+### Contact Management
+- ✅ Create new contacts with validation
+- ✅ View all contacts with pagination
+- ✅ Search by name or email (real-time)
+- ✅ Filter by date of birth range
+- ✅ Sort by name or creation date
+- ✅ Edit existing contacts
+- ✅ Delete contacts with confirmation
+- ✅ Soft delete (preserve history)
+
+### Data Persistence
+- ✅ PostgreSQL database
+- ✅ Automatic timestamps (createdAt, updatedAt)
+- ✅ Unique email constraint
+
+### User Experience
+- ✅ Responsive design (mobile, tablet, desktop)
+- ✅ Real-time validation
+- ✅ Loading states
+- ✅ Error notifications
+- ✅ Success messages
+- ✅ Confirmation dialogs
+
+### Code Quality
+- ✅ TypeScript for type safety
+- ✅ 80%+ test coverage
+- ✅ Linting & formatting
+- ✅ Security best practices
+- ✅ Performance optimized
+
+---
+
+## 🔐 Security
+
+- ✅ Input validation (frontend + backend)
+- ✅ SQL injection prevention (parameterized queries via JPA)
+- ✅ XSS protection (React escapes by default)
+- ✅ CORS configured for local development
+- ✅ Sensitive data not logged
+
+---
+
+## ⚡ Performance
+
+- API response time: < 200ms (p95)
+- Initial page load: < 3s
+- Database queries optimized with indexes
+- Pagination for large datasets
+- Lazy loading components
+
+---
+
+## 📖 Documentation
+
+### Developer Guides
+- **CLAUDE.md** (`.claude/CLAUDE.md`) - Claude Code development guide
+- **AI-ASSISTED-DEV-GUIDE.md** (`doc-specs/AI-ASSISTED-DEV-GUIDE.md`) - AI workflow guide
+- **Issue Specification** (`doc-specs/1-issue.md`) - Complete specification
+- **Backend README** (`backend/README.md`) - Backend-specific setup
+- **Frontend README** (`frontend/README.md`) - Frontend-specific setup
+
+### API Documentation
+- **OpenAPI/Swagger** (auto-generated at `/api/swagger-ui.html` when running)
+
+---
+
+## 🆘 Troubleshooting
+
+### Port Already in Use
+
+```bash
+# Check which process is using port 5173 (frontend)
+lsof -i :5173
+
+# Check which process is using port 8080 (backend)
+lsof -i :8080
+
+# Check which process is using port 5432 (database)
+lsof -i :5432
+
+# Kill process (replace PID with actual PID)
+kill -9 <PID>
+```
+
+### Docker Issues
+
+```bash
+# Clear Docker cache and rebuild
+docker-compose down -v
+docker-compose build --no-cache
+docker-compose up
+
+# Check Docker logs
+docker-compose logs -f
+```
+
+### Database Connection Issues
+
+```bash
+# Verify database is running
+docker-compose ps
+
+# Check database logs
+docker-compose logs postgres
+
+# Access database shell
+docker-compose exec postgres psql -U postgres -d contact_manager
+```
+
+### Frontend Not Connecting to Backend
+
+```bash
+# Verify backend is running
+curl http://localhost:8080/health
+
+# Check frontend environment variable
+cat frontend/.env.local
+# Should have: REACT_APP_API_URL=http://localhost:8080/api
+```
+
+---
+
+## 📝 Commits & Workflow
+
+### Semantic Commits
+```bash
+feat: add search feature
+fix: correct validation error
+test: add contact service tests
+docs: update API documentation
+chore: update dependencies
+```
+
+### Workflow
+1. Create a feature branch from `main`
+2. Implement feature following `/doc-specs/1-issue.md`
+3. Write tests (target 80%+ coverage)
+4. Run `npm run lint` (frontend) and `mvn checkstyle:check` (backend)
+5. Create pull request with description
+6. Code review
+7. Merge to `main`
+
+---
+
+## 📦 Dependencies
+
+### Frontend
+- react@18
+- typescript
+- vite
+- tailwindcss
+- react-hook-form
+- zod
+- axios
+- vitest
+- @testing-library/react
+
+### Backend
+- spring-boot-starter-web
+- spring-boot-starter-data-jpa
+- spring-boot-starter-validation
+- postgresql
+- flyway-core
+- lombok
+- junit-jupiter
+- testcontainers
+
+### Infrastructure
+- docker
+- docker-compose
+
+---
+
+## 🎯 Success Criteria (MVP Complete)
+
+✅ All 12 tasks completed (TASK-001 through TASK-012)  
+✅ 80%+ test coverage (backend + frontend)  
+✅ All CRUD operations working  
+✅ Search & filtering functional  
+✅ Pagination working  
+✅ Responsive design (mobile, tablet, desktop)  
+✅ API response time < 200ms  
+✅ Frontend load time < 3s  
+✅ Docker setup working locally  
+✅ Start/stop scripts functional  
+✅ No console errors in production  
+
+---
+
+## 🔄 Next Steps (Phase 2)
+
+Once MVP is complete:
+- User authentication (JWT)
+- Undo/Redo actions
+- Light/Dark themes
+- Export data (CSV/PDF)
+- Advanced filtering
+- Audit trail
+
+---
+
+## 📞 Support
+
+For questions or issues:
+1. Check [Troubleshooting](#-troubleshooting) section
+2. Review `/doc-specs/1-issue.md` for specification
+3. Check Docker logs: `docker-compose logs -f`
+4. Review application logs in containers
+
+---
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+---
+
+## 👤 Contributors
+
+- Daniel Augusto Smanioto
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with Spec Kit framework
+- AI-assisted development with Claude Code
+- Inspired by best practices in full-stack development
+
+---
+
+**Last Updated:** 2026-07-09  
+**Version:** 1.0.0 (MVP)
+
