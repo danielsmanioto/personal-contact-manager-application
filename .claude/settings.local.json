@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(spec-kit taskstoissues *)",
+      "Bash(npm install *)",
+      "Bash(gh auth *)"
+    ]
+  }
+}
