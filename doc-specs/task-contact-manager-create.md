@@ -22,7 +22,14 @@ Defines the principles that will guide ALL implementation:
 - ✅ Minimum 80% test coverage
 - ✅ No console.log in production code
 - ✅ Lint clean (ESLint + Prettier)
-- ✅ TypeScript with explicit types
+- ✅ Front: TypeScript with explicit types
+- ✅ Backend: solid principles
+- ✅ solid principles
+- ✅ backend / performance test
+
+### Architecture
+- ✅ backend / use hexagonal
+- ✅ backend / resiliente endpoints
 
 ### Security
 - ✅ Validate ALL user inputs (frontend + backend)
@@ -46,6 +53,11 @@ Defines the principles that will guide ALL implementation:
 - ✅ Well-documented code with "why" comments
 - ✅ Reusable components
 - ✅ Clear separation of concerns
+- ✅ Add logs
+
+### Documentation
+- ✅ Good documentation in README.md for developper.
+- ✅ api documentation with open api
 
 ---
 

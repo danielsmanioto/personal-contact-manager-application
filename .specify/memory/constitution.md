@@ -1,50 +1,131 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Personal Contact Manager Application — Constitution
+
+<!--
+SYNC IMPACT REPORT
+==================
+Version Change: N/A → 1.0.0 (Initial Adoption)
+Ratification Date: 2026-07-09
+Last Amended: 2026-07-09
+
+Principles Formalized (7 sections, 27 requirements):
+✅ Code Quality — testing, linting, type safety
+✅ Architecture — hexagonal backend, resilience
+✅ Security — input validation, no plaintext passwords
+✅ Performance — sub-200ms APIs, <3s initial load
+✅ User Experience — intuitive navigation, responsive, accessible
+✅ Maintainability — documented code, reusable components
+✅ Documentation — README, OpenAPI specs
+
+Templates Reviewed:
+✅ spec-template.md — aligned (user stories, acceptance criteria)
+✅ plan-template.md — aligned (Constitution Check gate present)
+✅ tasks-template.md — aligned (test-driven, infrastructure-first)
+
+Dependent Artifacts Status:
+✅ CLAUDE.md — requires update to reference this constitution
+⚠ README.md — quality standards already present, reference added below
+✅ No deprecations or removals
+-->
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Code Quality
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+**Non-Negotiable Standards:**
+- Minimum 80% test coverage (unit + integration combined)
+- Zero console.log() in production code
+- Lint clean per ESLint + Prettier standards
+- Frontend: TypeScript with explicit types (no `any` without justification)
+- Backend: SOLID principles (Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion)
+- Performance testing in CI/CD pipeline (benchmarks tracked)
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Rationale**: Quality gates prevent bugs, enable refactoring confidence, and reduce maintenance debt early.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Architecture
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+**Non-Negotiable Standards:**
+- Backend: Hexagonal (Ports & Adapters) architecture for domain isolation
+- All endpoints must implement resilience patterns (timeouts, retries, circuit breakers where applicable)
+- Clear separation: Controllers → Services → Repositories → Domain logic
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**Rationale**: Hexagonal architecture decouples business logic from infrastructure, enabling independent testing and technology swaps. Resilience prevents cascading failures.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Security
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**Non-Negotiable Standards:**
+- Validate ALL user inputs at frontend AND backend (defense in depth)
+- Sanitize all data before persisting to database
+- Never store plaintext passwords (use bcrypt or equivalent)
+- Implement protection against XSS (HTML escaping, CSP headers) and SQL Injection (parameterized queries, ORM safeguards)
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Rationale**: Layered validation catches both malformed and malicious input. Multiple attack vectors require multiple defenses.
+
+### IV. Performance
+
+**Non-Negotiable Standards:**
+- API responses: < 200ms (p95 latency baseline)
+- Initial application load: < 3 seconds to interactive
+- Image optimization: lazy loading, responsive sizes, appropriate formats
+- Component lazy loading: defer non-critical UI until needed
+
+**Rationale**: Performance directly impacts user retention and accessibility. These thresholds balance responsiveness with development pragmatism.
+
+### V. User Experience
+
+**Non-Negotiable Standards:**
+- Navigation must never require more than 3 clicks to reach core functionality
+- Every user action provides visual feedback (loading states, error/success messages, confirmations)
+- Responsive design: mobile, tablet, desktop all fully functional
+- Accessibility: WCAG 2.1 Level AA compliance (keyboard navigation, screen reader support, color contrast)
+
+**Rationale**: Intuitive UX reduces support burden and increases user satisfaction. Accessibility is both ethical and legally required.
+
+### VI. Maintainability
+
+**Non-Negotiable Standards:**
+- Code comments must explain WHY, not WHAT (naming + structure already show WHAT)
+- All business logic exposed as reusable components/functions
+- Clear separation of concerns: UI logic ≠ business logic ≠ data access
+- Structured logging at key decision points (errors, state transitions, performance milestones)
+
+**Rationale**: Future maintainers (often including your future self) need to understand intent, not just syntax. Reusable components prevent duplication and inconsistency.
+
+### VII. Documentation
+
+**Non-Negotiable Standards:**
+- README.md: Setup instructions, architecture overview, development workflow for new contributors
+- API Documentation: Full OpenAPI 3.0 specification covering all endpoints, request/response schemas, error codes
+
+**Rationale**: Self-documenting code is a myth; explicit documentation enables onboarding and reduces decision-making time during development.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### Amendment Process
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Amendments to this constitution require:
+1. **Proposal**: Document the change and its rationale
+2. **Review**: Ensure no backward-incompatible breaks without team consensus
+3. **Documentation**: Update this file with new amendment date and reasoning
+4. **Propagation**: Update dependent templates (spec, plan, tasks) and README references
+
+### Versioning Policy
+
+**Semantic Versioning** (MAJOR.MINOR.PATCH):
+- **MAJOR**: Principle removal or redefinition (backward-incompatible governance)
+- **MINOR**: New principle added, existing principle expanded, new mandatory section
+- **PATCH**: Clarifications, wording refinements, typo fixes, non-semantic improvements
+
+### Compliance & Review
+
+- All PRs must reference which principle(s) they satisfy or maintain
+- Architecture reviews gate PRs that modify the backend structure
+- Performance regressions must be explicitly justified or rejected
+- Constitution Check gate in `/speckit-plan` ensures every feature plan aligns with these principles
+
+## Implementation Guidance
+
+For detailed runtime guidance (conventions, file structure, tech stack, development workflow), see `CLAUDE.md` and `README.md`.
+
+---
+
+**Version**: 1.0.0 | **Ratified**: 2026-07-09 | **Last Amended**: 2026-07-09
