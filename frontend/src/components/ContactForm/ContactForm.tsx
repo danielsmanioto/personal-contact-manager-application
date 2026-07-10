@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { Contact, ContactRequest } from '../../types';
+import { contactSchema, type ContactFormData } from '../../utils/validation';
 import Button from '../Common/Button';
 import Input from '../Common/Input';
 
@@ -22,7 +24,8 @@ export default function ContactForm({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ContactRequest>({
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       name: initialValues?.name || '',
       email: initialValues?.email || '',
@@ -42,8 +45,8 @@ export default function ContactForm({
     }
   }, [initialValues, reset]);
 
-  const handleFormSubmit = async (_data: ContactRequest) => {
-    await onSubmit(_data);
+  const handleFormSubmit = async (data: ContactFormData) => {
+    await onSubmit(data as ContactRequest);
   };
 
   return (
@@ -53,17 +56,7 @@ export default function ContactForm({
           <Input
             label="Name"
             placeholder="John Doe"
-            {...register('name', {
-              required: 'Name is required',
-              minLength: {
-                value: 1,
-                message: 'Name must be at least 1 character',
-              },
-              maxLength: {
-                value: 255,
-                message: 'Name must not exceed 255 characters',
-              },
-            })}
+            {...register('name')}
             error={errors.name?.message}
             disabled={isLoading}
           />
@@ -74,13 +67,7 @@ export default function ContactForm({
             label="Email"
             type="email"
             placeholder="john@example.com"
-            {...register('email', {
-              required: 'Email is required',
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: 'Please enter a valid email address',
-              },
-            })}
+            {...register('email')}
             error={errors.email?.message}
             disabled={isLoading}
           />
@@ -89,12 +76,7 @@ export default function ContactForm({
         <Input
           label="Phone"
           placeholder="1234567890"
-          {...register('phone', {
-            pattern: {
-              value: /^[0-9]{10,20}$/,
-              message: 'Phone must be 10-20 digits',
-            },
-          })}
+          {...register('phone')}
           error={errors.phone?.message}
           helperText="10-20 digits (optional)"
           disabled={isLoading}
