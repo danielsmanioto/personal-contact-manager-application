@@ -10,8 +10,16 @@
       "Bash(npm run *)",
       "Bash(docker build *)",
       "Bash(git commit *)",
+      "Bash(git merge *)",
+      "Bash(git stash *)",
       "Bash(git checkout *)",
-      "Bash(npm list *)"
+      "Bash(curl -s http://localhost:8080/api/contacts)",
+      "Bash(docker-compose up *)",
+      "Bash(docker-compose ps *)",
+      "Bash(curl -s -X POST http://localhost:8080/api/contacts -H 'Content-Type: application/json' -d '{ *)",
+      "Bash(curl -s \"http://localhost:8080/api/contacts/search?q=john\")",
+      "Bash(curl -s \"http://localhost:8080/api/contacts/filter?fromDate=1990-01-01&toDate=1992-12-31\")",
+      "Bash(curl -s \"http://localhost:8080/api/contacts?page=0&size=2\")"
     ]
   }
 }
