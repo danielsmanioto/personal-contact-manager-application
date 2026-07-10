@@ -14,110 +14,110 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Check if Docker is installed
-echo -e "${BLUE}[1/5]${NC} Verificando Docker..."
-if ! command -v docker &> /dev/null; then
-    echo -e "${RED}❌ Docker não encontrado. Por favor, instale Docker.${NC}"
+PROJECT_ROOT=$(cd "$(dirname "$0")" && pwd)
+
+# Check requirements
+echo -e "${BLUE}[1/3]${NC} Verificando requisitos..."
+
+if ! command -v mvn &> /dev/null; then
+    echo -e "${RED}❌ Maven não encontrado. Por favor, instale Maven.${NC}"
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null; then
-    echo -e "${RED}❌ Docker Compose não encontrado. Por favor, instale Docker Compose.${NC}"
+if ! command -v npm &> /dev/null; then
+    echo -e "${RED}❌ npm não encontrado. Por favor, instale Node.js.${NC}"
     exit 1
 fi
-echo -e "${GREEN}✅ Docker encontrado${NC}"
-echo ""
 
-# Stop any existing containers
-echo -e "${BLUE}[2/5]${NC} Parando containers anteriores..."
-docker-compose down 2>/dev/null || true
-echo -e "${GREEN}✅ Containers parados${NC}"
-echo ""
-
-# Build images
-echo -e "${BLUE}[3/5]${NC} Construindo imagens Docker..."
-docker-compose build --no-cache || {
-    echo -e "${RED}❌ Erro ao construir imagens${NC}"
+export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null || echo "")
+if [ -z "$JAVA_HOME" ]; then
+    echo -e "${RED}❌ JAVA_HOME não encontrado.${NC}"
     exit 1
-}
-echo -e "${GREEN}✅ Imagens construídas${NC}"
+fi
+
+echo -e "${GREEN}✅ Todos os requisitos encontrados${NC}"
 echo ""
 
-# Start services
-echo -e "${BLUE}[4/5]${NC} Iniciando serviços..."
-docker-compose up -d || {
-    echo -e "${RED}❌ Erro ao iniciar serviços${NC}"
-    exit 1
-}
-echo -e "${GREEN}✅ Serviços iniciados${NC}"
-echo ""
+# Start backend
+echo -e "${BLUE}[2/3]${NC} Iniciando Backend (Spring Boot)..."
+cd "$PROJECT_ROOT/backend"
+mvn spring-boot:run > "$PROJECT_ROOT/.backend.log" 2>&1 &
+BACKEND_PID=$!
+echo -e "${GREEN}✅ Backend iniciado (PID: $BACKEND_PID)${NC}"
 
-# Wait for services to be ready
-echo -e "${BLUE}[5/5]${NC} Aguardando serviços ficarem prontos..."
-echo "  ⏳ Banco de dados..."
-for i in {1..30}; do
-    if docker-compose exec -T postgres pg_isready -U postgres &> /dev/null; then
-        echo -e "${GREEN}  ✅ PostgreSQL pronto${NC}"
+# Wait for backend to be ready
+echo "  ⏳ Aguardando Backend ficar pronto..."
+for i in {1..60}; do
+    if curl -s http://localhost:8080/api/contacts > /dev/null 2>&1; then
+        echo -e "${GREEN}  ✅ Backend pronto${NC}"
         break
     fi
-    if [ $i -eq 30 ]; then
-        echo -e "${RED}  ❌ Timeout aguardando PostgreSQL${NC}"
+    if [ $i -eq 60 ]; then
+        echo -e "${RED}  ❌ Timeout aguardando Backend${NC}"
+        kill $BACKEND_PID 2>/dev/null || true
         exit 1
     fi
     sleep 1
 done
+echo ""
 
-echo "  ⏳ Backend..."
-for i in {1..30}; do
-    if curl -s http://localhost:8081/api/contacts > /dev/null 2>&1; then
-        echo -e "${GREEN}  ✅ Backend pronto${NC}"
-        break
-    fi
-    if [ $i -eq 30 ]; then
-        echo -e "${YELLOW}  ⚠️  Backend ainda não respondeu (pode estar inicializando)${NC}"
-    fi
-    sleep 1
-done
+# Start frontend
+echo -e "${BLUE}[3/3]${NC} Iniciando Frontend (React + Vite)..."
+cd "$PROJECT_ROOT/frontend"
+npm run dev > "$PROJECT_ROOT/.frontend.log" 2>&1 &
+FRONTEND_PID=$!
+echo -e "${GREEN}✅ Frontend iniciado (PID: $FRONTEND_PID)${NC}"
 
-echo "  ⏳ Frontend..."
+# Wait for frontend to be ready
+echo "  ⏳ Aguardando Frontend ficar pronto..."
 for i in {1..30}; do
-    if curl -s http://localhost > /dev/null 2>&1; then
+    if curl -s http://localhost:5173 > /dev/null 2>&1; then
         echo -e "${GREEN}  ✅ Frontend pronto${NC}"
         break
     fi
     if [ $i -eq 30 ]; then
-        echo -e "${YELLOW}  ⚠️  Frontend ainda não respondeu${NC}"
+        echo -e "${YELLOW}  ⚠️  Frontend ainda inicializando...${NC}"
     fi
     sleep 1
 done
-
 echo ""
+
+# Save PIDs for stop script
+echo "$BACKEND_PID" > "$PROJECT_ROOT/.pids"
+echo "$FRONTEND_PID" >> "$PROJECT_ROOT/.pids"
+
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║             ✅ APLICAÇÃO INICIADA COM SUCESSO!                ║"
 echo "╠════════════════════════════════════════════════════════════════╣"
 echo "║                                                                ║"
-echo -e "║  🌐 ${GREEN}Frontend:${NC}        http://localhost                      ║"
-echo -e "║  🔌 ${GREEN}Backend API:${NC}     http://localhost:8081/api            ║"
-echo -e "║  📊 ${GREEN}Swagger UI:${NC}      http://localhost:8081/swagger-ui.html║"
-echo -e "║  🗄️  ${GREEN}Database:${NC}        localhost:5432 (postgres/postgres)   ║"
+echo -e "║  🌐 ${GREEN}Frontend:${NC}        http://localhost:5173                   ║"
+echo -e "║  🔌 ${GREEN}Backend API:${NC}     http://localhost:8080/api              ║"
+echo -e "║  📊 ${GREEN}Swagger UI:${NC}      http://localhost:8080/swagger-ui.html  ║"
+echo -e "║  🗄️  ${GREEN}Database:${NC}        localhost:5432 (postgres/postgres)    ║"
 echo "║                                                                ║"
 echo "╠════════════════════════════════════════════════════════════════╣"
 echo "║                         COMANDOS ÚTEIS                         ║"
 echo "╠════════════════════════════════════════════════════════════════╣"
 echo "║                                                                ║"
-echo "║  Ver logs de todos os serviços:                               ║"
-echo "║    docker-compose logs -f                                     ║"
+echo "║  Ver logs do Backend:                                         ║"
+echo "║    tail -f .backend.log                                       ║"
 echo "║                                                                ║"
-echo "║  Ver logs de um serviço específico:                           ║"
-echo "║    docker-compose logs -f backend                             ║"
-echo "║    docker-compose logs -f frontend                            ║"
-echo "║    docker-compose logs -f postgres                            ║"
+echo "║  Ver logs do Frontend:                                        ║"
+echo "║    tail -f .frontend.log                                      ║"
 echo "║                                                                ║"
 echo "║  Parar a aplicação:                                           ║"
 echo "║    ./stop.sh                                                  ║"
 echo "║                                                                ║"
-echo "║  Resetar tudo (remove dados):                                 ║"
-echo "║    docker-compose down -v                                     ║"
+echo "║  Abrir Frontend no navegador:                                 ║"
+echo "║    open http://localhost:5173                                 ║"
 echo "║                                                                ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
+echo -e "${YELLOW}💡 Pressione Ctrl+C para parar a aplicação${NC}"
+echo ""
+
+# Trap to handle Ctrl+C
+trap 'kill $BACKEND_PID $FRONTEND_PID 2>/dev/null; rm -f "$PROJECT_ROOT/.pids"' EXIT
+
+# Wait for both processes
+wait

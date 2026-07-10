@@ -1,32 +1,59 @@
 #!/bin/bash
 
-set -e
-
-echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║       🛑 Parando Personal Contact Manager...                  ║"
-echo "╚════════════════════════════════════════════════════════════════╝"
-echo ""
-
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}[1/2]${NC} Parando containers..."
-docker-compose down || {
-    echo -e "${RED}❌ Erro ao parar containers${NC}"
-    exit 1
-}
-echo -e "${GREEN}✅ Containers parados${NC}"
+PROJECT_ROOT=$(cd "$(dirname "$0")" && pwd)
+
+echo "╔════════════════════════════════════════════════════════════════╗"
+echo "║       🛑 Personal Contact Manager - Parando...                ║"
+echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
 
-echo -e "${BLUE}[2/2]${NC} Limpando recursos..."
-docker-compose ps -q | xargs -r docker stop 2>/dev/null || true
-echo -e "${GREEN}✅ Recursos limpos${NC}"
-echo ""
+if [ -f "$PROJECT_ROOT/.pids" ]; then
+    echo -e "${BLUE}Parando processos...${NC}"
+    while IFS= read -r PID; do
+        if [ -n "$PID" ] && ps -p "$PID" > /dev/null 2>&1; then
+            echo -e "  ⏳ Parando PID $PID..."
+            kill -TERM "$PID" 2>/dev/null || true
 
+            # Wait for process to terminate gracefully
+            for i in {1..5}; do
+                if ! ps -p "$PID" > /dev/null 2>&1; then
+                    echo -e "  ${GREEN}✅ Processo $PID parado${NC}"
+                    break
+                fi
+                sleep 1
+            done
+
+            # Force kill if still running
+            if ps -p "$PID" > /dev/null 2>&1; then
+                kill -9 "$PID" 2>/dev/null || true
+                echo -e "  ${YELLOW}⚠️  Processo $PID finalizado à força${NC}"
+            fi
+        fi
+    done < "$PROJECT_ROOT/.pids"
+
+    rm -f "$PROJECT_ROOT/.pids"
+    echo -e "${GREEN}✅ Todos os processos foram parados${NC}"
+else
+    echo -e "${YELLOW}⚠️  Nenhum arquivo de PIDs encontrado${NC}"
+    echo "Tentando parar manualmente..."
+
+    # Try to kill by port
+    if command -v lsof &> /dev/null; then
+        echo "Parando serviços nas portas 8080 e 5173..."
+        lsof -ti:8080 | xargs kill -9 2>/dev/null || true
+        lsof -ti:5173 | xargs kill -9 2>/dev/null || true
+        echo -e "${GREEN}✅ Serviços parados${NC}"
+    fi
+fi
+
+echo ""
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║             ✅ APLICAÇÃO PARADA COM SUCESSO!                  ║"
 echo "╠════════════════════════════════════════════════════════════════╣"
@@ -34,9 +61,11 @@ echo "║                                                                ║"
 echo "║  Para iniciar novamente:                                      ║"
 echo "║    ./start.sh                                                 ║"
 echo "║                                                                ║"
-echo "║  Para resetar tudo (remove dados do banco):                   ║"
-echo "║    docker-compose down -v                                     ║"
-echo "║    ./start.sh                                                 ║"
+echo "║  Ver logs do Backend:                                         ║"
+echo "║    tail -f .backend.log                                       ║"
+echo "║                                                                ║"
+echo "║  Ver logs do Frontend:                                        ║"
+echo "║    tail -f .frontend.log                                      ║"
 echo "║                                                                ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
