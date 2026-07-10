@@ -68,7 +68,7 @@ npm run format
 Create `.env.local` for development:
 
 ```env
-VITE_API_URL=http://localhost:8080/api
+VITE_API_URL=http://localhost:8081/api
 ```
 
 ## Project Structure

@@ -34,8 +34,8 @@ cd personal-contact-manager-application
 
 **Access the application:**
 - 🌐 Frontend: http://localhost
-- 🔌 Backend API: http://localhost:8080/api
-- 📊 Swagger UI: http://localhost:8080/swagger-ui.html
+- 🔌 Backend API: http://localhost:8081/api
+- 📊 Swagger UI: http://localhost:8081/swagger-ui.html
 
 ### Stop Application
 
@@ -69,7 +69,7 @@ cd personal-contact-manager-application
 │  - Custom hooks  │  - JPA/Hibernate     │                       │
 │  - State mgmt    │  - Error handling    │                       │
 └──────────────────┴──────────────────────┴───────────────────────┘
-      Port 80/443      Port 8080             Port 5432
+      Port 80/443      Port 8081             Port 5432
       (nginx)          (Tomcat)              (PostgreSQL)
 ```
 
@@ -216,10 +216,10 @@ mvn clean install
 mvn test
 
 # Start Spring Boot server
-mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8080"
+mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8081"
 ```
 
-**Backend will run at:** http://localhost:8080
+**Backend will run at:** http://localhost:8081
 
 #### Database Setup (PostgreSQL)
 
@@ -251,7 +251,7 @@ npm run dev
 
 ### Base URL
 ```
-http://localhost:8080/api
+http://localhost:8081/api
 ```
 
 ### Endpoints
@@ -563,8 +563,8 @@ docker-compose up -d
 # Check which process is using port 5173 (frontend)
 lsof -i :5173
 
-# Check which process is using port 8080 (backend)
-lsof -i :8080
+# Check which process is using port 8081 (backend)
+lsof -i :8081
 
 # Check which process is using port 5432 (database)
 lsof -i :5432
@@ -602,11 +602,11 @@ docker-compose exec postgres psql -U postgres -d contact_manager
 
 ```bash
 # Verify backend is running
-curl http://localhost:8080/health
+curl http://localhost:8081/health
 
 # Check frontend environment variable
 cat frontend/.env.local
-# Should have: REACT_APP_API_URL=http://localhost:8080/api
+# Should have: REACT_APP_API_URL=http://localhost:8081/api
 ```
 
 ---
@@ -763,7 +763,7 @@ npm run test:coverage    # Coverage report
 
 **Create Contact:**
 ```bash
-curl -X POST http://localhost:8080/api/contacts \
+curl -X POST http://localhost:8081/api/contacts \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
@@ -775,18 +775,18 @@ curl -X POST http://localhost:8080/api/contacts \
 
 **Search Contacts:**
 ```bash
-curl http://localhost:8080/api/contacts/search?q=john&page=0&size=10
+curl http://localhost:8081/api/contacts/search?q=john&page=0&size=10
 ```
 
 **Filter by Date:**
 ```bash
-curl http://localhost:8080/api/contacts/filter?fromDate=1990-01-01&toDate=2000-12-31
+curl http://localhost:8081/api/contacts/filter?fromDate=1990-01-01&toDate=2000-12-31
 ```
 
 ### Swagger UI
 Interactive API documentation available at:
 ```
-http://localhost:8080/swagger-ui.html
+http://localhost:8081/swagger-ui.html
 ```
 
 ## ✅ Validation Rules
@@ -981,7 +981,7 @@ docker-compose down -v
 
 ## 📞 Support
 
-- Check API docs: `http://localhost:8080/swagger-ui.html`
+- Check API docs: `http://localhost:8081/swagger-ui.html`
 - Review test files for usage examples
 - Check `PROJECT_STATUS.md` for implementation details
 - View component README files in respective directories

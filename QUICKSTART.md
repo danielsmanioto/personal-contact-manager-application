@@ -8,7 +8,7 @@
 
 Pronto! A aplicação está rodando com:
 - ✅ PostgreSQL (banco de dados)
-- ✅ Backend (Spring Boot na porta 8080)
+- ✅ Backend (Spring Boot na porta 8081)
 - ✅ Frontend (React na porta 80)
 
 ## 🌐 Acessar a Aplicação
@@ -18,8 +18,8 @@ Após executar `./start.sh`, acesse:
 | Serviço | URL |
 |---------|-----|
 | **Frontend** | http://localhost |
-| **Backend API** | http://localhost:8080/api |
-| **Swagger UI** | http://localhost:8080/swagger-ui.html |
+| **Backend API** | http://localhost:8081/api |
+| **Swagger UI** | http://localhost:8081/swagger-ui.html |
 | **Database** | localhost:5432 (postgres/postgres) |
 
 ## 🛑 Parar Aplicação
@@ -58,7 +58,7 @@ Após `./start.sh`, execute:
 
 ```bash
 # Verificar se backend está respondendo
-curl http://localhost:8080/api/contacts
+curl http://localhost:8081/api/contacts
 
 # Deve retornar algo como:
 # {"content":[],"pageNumber":0,"pageSize":10,"totalElements":0,"totalPages":0}
@@ -68,8 +68,8 @@ curl http://localhost:8080/api/contacts
 
 ### Porta já está em uso
 ```bash
-# Liberar porta 8080
-lsof -i :8080
+# Liberar porta 8081
+lsof -i :8081
 kill -9 <PID>
 ```
 

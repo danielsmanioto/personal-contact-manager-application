@@ -30,9 +30,9 @@ mvn clean install
 mvn spring-boot:run
 
 # 4. Access API
-# - REST API: http://localhost:8080/api
-# - Swagger UI: http://localhost:8080/swagger-ui.html
-# - Health: http://localhost:8080/actuator/health
+# - REST API: http://localhost:8081/api
+# - Swagger UI: http://localhost:8081/swagger-ui.html
+# - Health: http://localhost:8081/actuator/health
 ```
 
 ---
@@ -175,7 +175,7 @@ CREATE INDEX idx_contacts_deleted_at ON contacts(deleted_at);
 
 ### Base URL
 ```
-http://localhost:8080/api
+http://localhost:8081/api
 ```
 
 ### Endpoints
@@ -193,12 +193,12 @@ http://localhost:8080/api
 
 **List Contacts**
 ```bash
-curl -X GET "http://localhost:8080/api/contacts?page=0&size=10"
+curl -X GET "http://localhost:8081/api/contacts?page=0&size=10"
 ```
 
 **Create Contact**
 ```bash
-curl -X POST "http://localhost:8080/api/contacts" \
+curl -X POST "http://localhost:8081/api/contacts" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
@@ -210,7 +210,7 @@ curl -X POST "http://localhost:8080/api/contacts" \
 
 **Search**
 ```bash
-curl -X GET "http://localhost:8080/api/contacts/search?q=john&page=0&size=10"
+curl -X GET "http://localhost:8081/api/contacts/search?q=john&page=0&size=10"
 ```
 
 See SPECIFICATION.md for full API documentation.
@@ -311,7 +311,7 @@ docker run -d \
   -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/contact_manager \
   -e SPRING_DATASOURCE_USERNAME=postgres \
   -e SPRING_DATASOURCE_PASSWORD=postgres \
-  -p 8080:8080 \
+  -p 8081:8080 \
   --name contact-manager-backend \
   contact-manager-backend:latest
 ```
@@ -358,7 +358,7 @@ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=
 
 - [ ] Maven build succeeds: `mvn clean install`
 - [ ] Spring Boot app starts: `mvn spring-boot:run`
-- [ ] Application listens on port 8080
+- [ ] Application listens on port 8081
 - [ ] All dependencies compile without errors
 - [ ] Dockerfile builds successfully
 - [ ] Logger configured (SLF4J working)
