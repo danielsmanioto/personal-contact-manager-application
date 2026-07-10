@@ -1,5 +1,14 @@
 # Project Guidelines
 
+## 📊 Project Status
+
+**Always check the current project status before starting work:**
+- 📈 **Progress:** See `PROJECT_STATUS.md` for task checklist and completion status
+- 🎯 **Current Task:** Check which TASK is marked as "In Progress"
+- ✅ **Completed:** Tasks marked as COMPLETED can be referenced in new work
+
+---
+
 ## Git Workflow: Trunk-Based Development
 
 This project uses **trunk-based development** with the following conventions:
