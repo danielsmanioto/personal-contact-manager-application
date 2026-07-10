@@ -25,7 +25,8 @@ export function useContacts(page: number = 0, size: number = 10) {
         loading: false,
       }));
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch contacts';
+      const message =
+        err instanceof Error ? err.message : 'Failed to fetch contacts';
       setState((prev) => ({
         ...prev,
         error: message,
