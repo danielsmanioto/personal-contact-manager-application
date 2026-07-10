@@ -20,4 +20,14 @@ export const contactService = {
     api.get<PaginatedResponse<Contact>>('/contacts/search', {
       params: { q, page, size },
     }),
+
+  filterByDateRange: (fromDate: string, toDate: string, page = 0, size = 10) =>
+    api.get<PaginatedResponse<Contact>>('/contacts/filter', {
+      params: { fromDate, toDate, page, size },
+    }),
+
+  sortContacts: (sortBy: 'name' | 'date', page = 0, size = 10) =>
+    api.get<PaginatedResponse<Contact>>('/contacts', {
+      params: { page, size, sort: sortBy === 'name' ? 'name,asc' : 'createdAt,desc' },
+    }),
 };

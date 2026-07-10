@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { Contact, ContactRequest, ToastMessage } from './types';
 import {
   Header,
@@ -9,20 +9,10 @@ import {
   ConfirmDialog,
   ToastContainer,
 } from './components';
+import { useContacts } from './hooks/useContacts';
+import { contactService } from './services/contactService';
 
 export default function App() {
-  const [contacts, setContacts] = useState<Contact[]>([
-    {
-      id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
-      phone: '1234567890',
-      birthDate: '1990-01-01',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ]);
-
   const [showForm, setShowForm] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | undefined>();
   const [deleteConfirm, setDeleteConfirm] = useState<{
@@ -30,7 +20,18 @@ export default function App() {
     contactId?: string;
   }>({ isOpen: false });
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Listing filters state
+  const [page, setPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [fromDate, setFromDate] = useState<string | null>(null);
+  const [toDate, setToDate] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
+
+  // Fetch contacts with current filters
+  const { contacts, loading, error, totalPages, totalItems, refetch } =
+    useContacts(page, 10, searchQuery, fromDate, toDate, sortBy);
 
   const addToast = (type: 'success' | 'error' | 'info', message: string) => {
     const id = Date.now().toString();
@@ -41,59 +42,102 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const handleSubmitContact = async (data: ContactRequest) => {
-    setIsLoading(true);
-    try {
-      if (editingContact) {
-        setContacts((prev) =>
-          prev.map((c) =>
-            c.id === editingContact.id
-              ? {
-                  ...c,
-                  ...data,
-                  updatedAt: new Date().toISOString(),
-                }
-              : c
-          )
-        );
-        addToast('success', 'Contact updated successfully!');
-      } else {
-        const newContact: Contact = {
-          id: Date.now().toString(),
-          ...data,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        setContacts((prev) => [...prev, newContact]);
-        addToast('success', 'Contact created successfully!');
+  const handleSubmitContact = useCallback(
+    async (data: ContactRequest) => {
+      setIsSubmitting(true);
+      try {
+        if (editingContact) {
+          await contactService.updateContact(editingContact.id, data);
+          addToast('success', 'Contact updated successfully!');
+        } else {
+          await contactService.createContact(data);
+          addToast('success', 'Contact created successfully!');
+        }
+        setShowForm(false);
+        setEditingContact(undefined);
+        setPage(0);
+        refetch();
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Failed to save contact';
+        addToast('error', message);
+      } finally {
+        setIsSubmitting(false);
       }
-      setShowForm(false);
-      setEditingContact(undefined);
-    } catch {
-      addToast('error', 'Failed to save contact');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [editingContact, refetch]
+  );
 
   const handleDeleteContact = (id: string) => {
     setDeleteConfirm({ isOpen: true, contactId: id });
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = useCallback(async () => {
     if (deleteConfirm.contactId) {
-      setContacts((prev) =>
-        prev.filter((c) => c.id !== deleteConfirm.contactId)
-      );
-      addToast('success', 'Contact deleted successfully!');
-      setDeleteConfirm({ isOpen: false });
+      try {
+        await contactService.deleteContact(deleteConfirm.contactId);
+        addToast('success', 'Contact deleted successfully!');
+        setDeleteConfirm({ isOpen: false });
+        refetch();
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Failed to delete contact';
+        addToast('error', message);
+      }
     }
-  };
+  }, [deleteConfirm.contactId, refetch]);
 
   const handleEditContact = (contact: Contact) => {
     setEditingContact(contact);
     setShowForm(true);
   };
+
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+    setPage(0);
+  }, []);
+
+  const handleFilter = useCallback(
+    (from: string | null, to: string | null) => {
+      setFromDate(from);
+      setToDate(to);
+      setPage(0);
+    },
+    []
+  );
+
+  const handleSort = useCallback((newSort: 'name' | 'date') => {
+    setSortBy(newSort);
+    setPage(0);
+  }, []);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col bg-gray-50">
+        <Header title="Personal Contact Manager" />
+        <main className="flex-1 py-8">
+          <Container maxWidth="2xl">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">
+              <p className="font-semibold">Error loading contacts</p>
+              <p className="mt-2 text-sm">{error}</p>
+              <button
+                onClick={() => refetch()}
+                className="mt-4 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+              >
+                Try Again
+              </button>
+            </div>
+          </Container>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -131,7 +175,7 @@ export default function App() {
                   setShowForm(false);
                   setEditingContact(undefined);
                 }}
-                isLoading={isLoading}
+                isLoading={isSubmitting}
               />
             </div>
           )}
@@ -140,7 +184,14 @@ export default function App() {
             contacts={contacts}
             onEdit={handleEditContact}
             onDelete={handleDeleteContact}
-            isLoading={false}
+            isLoading={loading}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            currentPage={page}
+            onSearch={handleSearch}
+            onFilter={handleFilter}
+            onSort={handleSort}
+            onPageChange={handlePageChange}
           />
         </Container>
       </main>
