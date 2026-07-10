@@ -38,6 +38,7 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
       'no-console': ['error', { allow: ['warn', 'error'] }],
+      'no-unused-vars': 'off',
     },
     settings: {
       react: {
