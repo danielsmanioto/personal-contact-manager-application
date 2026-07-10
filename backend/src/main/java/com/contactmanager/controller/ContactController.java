@@ -2,6 +2,7 @@ package com.contactmanager.controller;
 
 import com.contactmanager.dto.ContactRequest;
 import com.contactmanager.dto.ContactResponse;
+import com.contactmanager.dto.PaginatedResponse;
 import com.contactmanager.service.ContactService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -46,13 +47,13 @@ public class ContactController {
     @GetMapping
     @Operation(summary = "List all contacts", description = "Retrieve paginated list of active contacts")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved contacts")
-    public ResponseEntity<Page<ContactResponse>> listContacts(
+    public ResponseEntity<PaginatedResponse<ContactResponse>> listContacts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         log.debug("Listing contacts - page: {}, size: {}", page, size);
         Page<ContactResponse> contacts = contactService.getAll(page, size);
-        return ResponseEntity.ok(contacts);
+        return ResponseEntity.ok(toPaginatedResponse(contacts));
     }
 
     /**
@@ -137,13 +138,48 @@ public class ContactController {
     @GetMapping("/search")
     @Operation(summary = "Search contacts", description = "Search contacts by name or email (case-insensitive)")
     @ApiResponse(responseCode = "200", description = "Search results retrieved")
-    public ResponseEntity<Page<ContactResponse>> searchContacts(
+    public ResponseEntity<PaginatedResponse<ContactResponse>> searchContacts(
             @RequestParam String q,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         log.debug("Searching contacts - query: '{}', page: {}, size: {}", q, page, size);
         Page<ContactResponse> results = contactService.search(q, page, size);
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(toPaginatedResponse(results));
+    }
+
+    /**
+     * Filter contacts by birth date range.
+     *
+     * @param fromDate Start date (ISO format: YYYY-MM-DD)
+     * @param toDate End date (ISO format: YYYY-MM-DD)
+     * @param page Page number (0-indexed, default 0)
+     * @param size Page size (default 10)
+     * @return Page of matching contacts
+     */
+    @GetMapping("/filter")
+    @Operation(summary = "Filter contacts by birth date", description = "Filter contacts by birth date range")
+    @ApiResponse(responseCode = "200", description = "Filter results retrieved")
+    public ResponseEntity<PaginatedResponse<ContactResponse>> filterByDateRange(
+            @RequestParam String fromDate,
+            @RequestParam String toDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        log.debug("Filtering contacts by date - from: '{}', to: '{}', page: {}, size: {}", fromDate, toDate, page, size);
+        java.time.LocalDate from = java.time.LocalDate.parse(fromDate);
+        java.time.LocalDate to = java.time.LocalDate.parse(toDate);
+        Page<ContactResponse> results = contactService.filterByBirthDateRange(from, to, page, size);
+        return ResponseEntity.ok(toPaginatedResponse(results));
+    }
+
+    private <T> PaginatedResponse<T> toPaginatedResponse(Page<T> page) {
+        return new PaginatedResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

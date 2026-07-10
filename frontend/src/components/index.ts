@@ -6,3 +6,7 @@ export type { ToastMessage } from './Toast/Toast';
 export { default as ContactForm } from './ContactForm/ContactForm';
 export { default as ContactList } from './ContactList/ContactList';
 export { default as ContactCard } from './ContactCard/ContactCard';
+export { default as SearchBar } from './SearchBar/SearchBar';
+export { default as FilterBar } from './FilterBar/FilterBar';
+export { default as SortOptions } from './SortOptions/SortOptions';
+export { default as Pagination } from './Pagination/Pagination';
