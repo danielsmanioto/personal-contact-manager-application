@@ -3,7 +3,9 @@
     "allow": [
       "Bash(spec-kit taskstoissues *)",
       "Bash(npm install *)",
-      "Bash(gh auth *)"
+      "Bash(gh auth *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'docs: add PROJECT_STATUS.md and update CLAUDE.md *)"
     ]
   }
 }
