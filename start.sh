@@ -69,7 +69,7 @@ done
 
 echo "  ⏳ Backend..."
 for i in {1..30}; do
-    if curl -s http://localhost:8080/api/contacts > /dev/null 2>&1; then
+    if curl -s http://localhost:8081/api/contacts > /dev/null 2>&1; then
         echo -e "${GREEN}  ✅ Backend pronto${NC}"
         break
     fi
@@ -97,8 +97,8 @@ echo "║             ✅ APLICAÇÃO INICIADA COM SUCESSO!                ║"
 echo "╠════════════════════════════════════════════════════════════════╣"
 echo "║                                                                ║"
 echo -e "║  🌐 ${GREEN}Frontend:${NC}        http://localhost                      ║"
-echo -e "║  🔌 ${GREEN}Backend API:${NC}     http://localhost:8080/api            ║"
-echo -e "║  📊 ${GREEN}Swagger UI:${NC}      http://localhost:8080/swagger-ui.html║"
+echo -e "║  🔌 ${GREEN}Backend API:${NC}     http://localhost:8081/api            ║"
+echo -e "║  📊 ${GREEN}Swagger UI:${NC}      http://localhost:8081/swagger-ui.html║"
 echo -e "║  🗄️  ${GREEN}Database:${NC}        localhost:5432 (postgres/postgres)   ║"
 echo "║                                                                ║"
 echo "╠════════════════════════════════════════════════════════════════╣"
