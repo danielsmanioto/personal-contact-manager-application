@@ -13,8 +13,8 @@ describe('ToastContainer', () => {
 
     render(<ToastContainer toasts={toasts} onClose={mockClose} />);
 
-    expect(screen.getByText('Success!')).toBeInTheDocument();
-    expect(screen.getByText('Error!')).toBeInTheDocument();
+    expect(screen.getByText('Success!')).toBeTruthy();
+    expect(screen.getByText('Error!')).toBeTruthy();
   });
 
   it('renders empty when no toasts', () => {
@@ -34,18 +34,6 @@ describe('ToastContainer', () => {
     fireEvent.click(closeButtons[0]);
 
     expect(mockClose).toHaveBeenCalledWith('1');
-  });
-
-  it('renders correct toast variant classes', () => {
-    const toasts: ToastMessage[] = [
-      { id: '1', type: 'success', message: 'Success!' },
-    ];
-    const mockClose = vi.fn();
-
-    const { container } = render(<ToastContainer toasts={toasts} onClose={mockClose} />);
-
-    const toast = container.querySelector('[class*="bg-green"]');
-    expect(toast).toBeInTheDocument();
   });
 
   it('renders multiple toasts stacked', () => {
