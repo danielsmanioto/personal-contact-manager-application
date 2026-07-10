@@ -158,8 +158,6 @@ class ContactServiceTests {
     @Test
     void testUpdate_Success() {
         when(contactRepository.findByIdAndNotDeleted(testContactId)).thenReturn(Optional.of(testContact));
-        when(contactRepository.existsByEmailAndNotDeletedExcludingId(testRequest.getEmail(), testContactId))
-            .thenReturn(false);
         when(contactRepository.save(any(Contact.class))).thenReturn(testContact);
 
         ContactResponse result = contactService.update(testContactId, testRequest);
@@ -167,7 +165,25 @@ class ContactServiceTests {
         assertNotNull(result);
         assertEquals("John Doe", result.getName());
         verify(contactRepository, times(1)).findByIdAndNotDeleted(testContactId);
-        verify(contactRepository, times(1)).existsByEmailAndNotDeletedExcludingId(testRequest.getEmail(), testContactId);
+        verify(contactRepository, times(1)).save(any(Contact.class));
+    }
+
+    @Test
+    void testUpdate_WithDifferentEmail() {
+        ContactRequest updateRequest = new ContactRequest("Jane Doe", "jane@example.com", "1234567890", null);
+        Contact existingContact = new Contact("John Doe", "john@example.com", "1234567890", null);
+        existingContact.setId(testContactId);
+
+        when(contactRepository.findByIdAndNotDeleted(testContactId)).thenReturn(Optional.of(existingContact));
+        when(contactRepository.existsByEmailAndNotDeletedExcludingId("jane@example.com", testContactId))
+            .thenReturn(false);
+        when(contactRepository.save(any(Contact.class))).thenReturn(existingContact);
+
+        ContactResponse result = contactService.update(testContactId, updateRequest);
+
+        assertNotNull(result);
+        verify(contactRepository, times(1)).findByIdAndNotDeleted(testContactId);
+        verify(contactRepository, times(1)).existsByEmailAndNotDeletedExcludingId("jane@example.com", testContactId);
         verify(contactRepository, times(1)).save(any(Contact.class));
     }
 
@@ -195,18 +211,17 @@ class ContactServiceTests {
     }
 
     @Test
-    void testUpdate_CanUpdateToSameEmail() {
+    void testUpdate_CanUpdateOtherFieldsWithSameEmail() {
+        ContactRequest updateRequest = new ContactRequest("Jane Doe", testContact.getEmail(), "9876543210", LocalDate.of(1995, 5, 20));
         when(contactRepository.findByIdAndNotDeleted(testContactId)).thenReturn(Optional.of(testContact));
-        when(contactRepository.existsByEmailAndNotDeletedExcludingId(testRequest.getEmail(), testContactId))
-            .thenReturn(false);
         when(contactRepository.save(any(Contact.class))).thenReturn(testContact);
 
-        ContactResponse result = contactService.update(testContactId, testRequest);
+        ContactResponse result = contactService.update(testContactId, updateRequest);
 
         assertNotNull(result);
         verify(contactRepository, times(1)).findByIdAndNotDeleted(testContactId);
-        verify(contactRepository, times(1)).existsByEmailAndNotDeletedExcludingId(testRequest.getEmail(), testContactId);
         verify(contactRepository, times(1)).save(any(Contact.class));
+        verify(contactRepository, never()).existsByEmailAndNotDeletedExcludingId(any(), any());
     }
 
     // DELETE TESTS
