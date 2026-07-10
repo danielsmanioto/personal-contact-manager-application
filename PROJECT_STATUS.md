@@ -1,8 +1,8 @@
 # 📊 Project Status - Personal Contact Manager
 
 **Last Updated:** 2026-07-09  
-**Current Branch:** `feature/TASK-003-contact-service-layer`  
-**Overall Progress:** 3/12 tasks completed (25%)
+**Current Branch:** `feature/TASK-004-rest-api-endpoints`  
+**Overall Progress:** 4/12 tasks completed (33%)
 
 ---
 
@@ -34,15 +34,18 @@
   - Branch: `feature/TASK-003-contact-service-layer`
   - Next: Merge to main and proceed to TASK-004
 
-- [ ] **TASK-004: REST API Endpoints**
-  - Status: ⏳ TODO
-  - ContactController (6 endpoints)
-  - GlobalExceptionHandler (error handling)
-  - CORS configuration
-  - Swagger/OpenAPI docs
-  - Integration tests (Testcontainers)
-  - Estimated: 6 hours
-  - Branch: `feature/TASK-004-rest-api-endpoints` (not created yet)
+- [x] **TASK-004: REST API Endpoints**
+  - Status: ✅ COMPLETED
+  - ContactController with 6 REST endpoints
+  - GlobalExceptionHandler for error handling (400, 404, 409, 500)
+  - ErrorResponse DTO for standardized responses
+  - CORS configuration (localhost:5173)
+  - Swagger/OpenAPI annotations on all endpoints
+  - 18 integration tests with Testcontainers (100% passing)
+  - All endpoints tested: CRUD, validation, error cases
+  - Lines of Code: ~700
+  - Branch: `feature/TASK-004-rest-api-endpoints`
+  - Next: Merge to main and proceed to TASK-005
 
 ### Phase 2: Frontend Setup & Components (TASK-005 to TASK-010)
 
@@ -112,12 +115,14 @@
 
 | Metric | Value | Status |
 |--------|-------|--------|
-| Tasks Completed | 3/12 | 25% |
-| Backend Java Files | 8 | ✅ |
-| Unit Tests | 22 | ✅ All Passing |
+| Tasks Completed | 4/12 | 33% |
+| Backend Java Files | 13 | ✅ |
+| Service Tests | 22 | ✅ All Passing |
+| Controller Tests | 18 | ✅ All Passing |
+| Integration Tests | 18 | ✅ All Passing |
 | Build Status | SUCCESS | ✅ |
-| Code Coverage (TASK-003) | ~100% | ✅ |
-| API Endpoints | 0/6 | ⏳ TODO |
+| Lines of Code (Backend) | ~3,200+ | ✅ |
+| API Endpoints Implemented | 6/6 | ✅ |
 | Frontend Components | 0/8+ | ⏳ TODO |
 
 ---
