@@ -11,11 +11,7 @@ export const NotificationContext = createContext<
   NotificationContextType | undefined
 >(undefined);
 
-export function NotificationProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function NotificationProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = useCallback(

@@ -9,8 +9,7 @@ export const contactService = {
 
   getContact: (id: string) => api.get<Contact>(`/contacts/${id}`),
 
-  createContact: (data: ContactRequest) =>
-    api.post<Contact>('/contacts', data),
+  createContact: (data: ContactRequest) => api.post<Contact>('/contacts', data),
 
   updateContact: (id: string, data: ContactRequest) =>
     api.put<Contact>(`/contacts/${id}`, data),
