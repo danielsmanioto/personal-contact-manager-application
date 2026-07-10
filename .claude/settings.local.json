@@ -5,7 +5,11 @@
       "Bash(npm install *)",
       "Bash(gh auth *)",
       "Bash(git add *)",
-      "Bash(git commit -m 'docs: add PROJECT_STATUS.md and update CLAUDE.md *)"
+      "Bash(git commit -m 'docs: add PROJECT_STATUS.md and update CLAUDE.md *)",
+      "Bash(npm create *)",
+      "Bash(npm run *)",
+      "Bash(docker build *)",
+      "Bash(git commit *)"
     ]
   }
 }
