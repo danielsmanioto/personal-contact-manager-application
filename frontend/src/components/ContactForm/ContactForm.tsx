@@ -24,11 +24,12 @@ export default function ContactForm({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
     watch,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     mode: 'onChange',
+    shouldFocusError: true,
     defaultValues: {
       name: initialValues?.name || '',
       email: initialValues?.email || '',
@@ -38,6 +39,12 @@ export default function ContactForm({
   });
 
   const formValues = watch();
+
+  // Manual validity check - button enables when required fields are filled and valid
+  const hasName = formValues.name && formValues.name.trim().length > 0;
+  const hasEmail = formValues.email && formValues.email.trim().length > 0;
+  const hasNoErrors = Object.keys(errors).length === 0;
+  const isFormValid = hasName && hasEmail && hasNoErrors;
 
   useEffect(() => {
     if (initialValues) {
@@ -115,7 +122,7 @@ export default function ContactForm({
           type="submit"
           variant="primary"
           size="lg"
-          disabled={isLoading || !isValid}
+          disabled={isLoading || !isFormValid}
           isLoading={isLoading}
           className="flex-1"
         >
