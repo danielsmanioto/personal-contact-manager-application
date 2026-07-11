@@ -9,17 +9,11 @@ import { BASE_URL } from './constants.js';
  * GET /contacts
  */
 export function listContacts(params = {}) {
-  const queryParams = {
-    page: params.page || 1,
-    limit: params.limit || 10,
-  };
+  const page = params.page || 1;
+  const limit = params.limit || 10;
+  const url = `${BASE_URL}/contacts?page=${page}&limit=${limit}`;
 
-  const url = new URL(`${BASE_URL}/contacts`);
-  Object.keys(queryParams).forEach(key => {
-    if (queryParams[key]) url.searchParams.append(key, queryParams[key]);
-  });
-
-  return http.get(url.toString(), {
+  return http.get(url, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -88,10 +82,9 @@ export function deleteContact(id) {
  * GET /contacts/search?q=query
  */
 export function searchContacts(query) {
-  const url = new URL(`${BASE_URL}/contacts/search`);
-  url.searchParams.append('q', query);
+  const url = `${BASE_URL}/contacts/search?q=${encodeURIComponent(query)}`;
 
-  return http.get(url.toString(), {
+  return http.get(url, {
     headers: {
       'Content-Type': 'application/json',
     },

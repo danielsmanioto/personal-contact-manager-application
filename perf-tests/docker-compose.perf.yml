@@ -8,16 +8,11 @@ services:
       - ./k6:/scripts
       - ./results:/results
     environment:
-      API_URL: ${API_URL:-http://backend:8080/api}
+      API_URL: ${API_URL:-http://localhost:8080/api}
       CONTACT_COUNT: ${CONTACT_COUNT:-10000}
       TEST_DURATION_SOAK: ${TEST_DURATION_SOAK:-60}
-      K6_VUS: ${K6_VUS:-}
-      K6_DURATION: ${K6_DURATION:-}
-    networks:
-      - contact-manager-net
-    command: echo "k6 ready - run specific scenario with: docker-compose run k6 run /scripts/scenarios/smoke.js"
-    depends_on:
-      - backend
+    working_dir: /scripts
+    entrypoint: /bin/bash
 
   # Optional: Toxiproxy for connection-level fault injection
   toxiproxy:
@@ -67,17 +62,13 @@ services:
       GF_INSTALL_PLUGINS: grafana-clock-panel
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./grafana-provisioning:/etc/grafana/provisioning
-    networks:
-      - contact-manager-net
-    depends_on:
-      - influxdb
     profiles:
       - visualization  # Only start when needed
 
 networks:
-  contact-manager-net:
-    external: true
+  default:
+    name: contact-manager-net
+    driver: bridge
 
 volumes:
   influxdb-data:
