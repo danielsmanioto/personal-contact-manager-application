@@ -1,5 +1,7 @@
+import { Mail, Phone, Calendar, Edit2, Trash2 } from 'lucide-react';
 import type { Contact } from '../../types';
-import Button from '../Common/Button';
+import { Button } from '../atoms';
+import { cn } from '../../utils/cn';
 
 interface ContactCardProps {
   contact: Contact;
@@ -9,12 +11,9 @@ interface ContactCardProps {
 
 export default function ContactCard({
   contact,
-  onEdit: _onEdit,
-  onDelete: _onDelete,
+  onEdit,
+  onDelete,
 }: ContactCardProps) {
-  const onEdit = _onEdit;
-  const onDelete = _onDelete;
-
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
       year: 'numeric',
@@ -24,70 +23,76 @@ export default function ContactCard({
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow hover:shadow-md transition-shadow">
-      <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900">{contact.name}</h3>
+    <div
+      className={cn(
+        'bg-white border border-gray-400 rounded-md p-5',
+        'shadow-sm hover:shadow-md hover:border-sky-500 hover:-translate-y-1',
+        'transition-all duration-200 cursor-pointer group'
+      )}
+    >
+      {/* Header com nome */}
+      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-sky-600 transition-colors truncate">
+        {contact.name}
+      </h3>
 
-        <dl className="mt-4 space-y-3 text-sm">
-          <div className="flex items-center gap-2">
-            <dt className="text-gray-600">Email:</dt>
-            <dd className="text-gray-900 break-all">
-              <a
-                href={`mailto:${contact.email}`}
-                className="text-blue-600 hover:underline"
-              >
-                {contact.email}
-              </a>
-            </dd>
+      {/* Informações de contato */}
+      <div className="space-y-3 mt-4 mb-4">
+        {contact.email && (
+          <div className="flex items-center gap-3 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            <Mail className="w-4 h-4 text-sky-500 flex-shrink-0" />
+            <a href={`mailto:${contact.email}`} className="hover:underline truncate">
+              {contact.email}
+            </a>
           </div>
+        )}
 
-          {contact.phone && (
-            <div className="flex items-center gap-2">
-              <dt className="text-gray-600">Phone:</dt>
-              <dd className="text-gray-900">
-                <a
-                  href={`tel:${contact.phone}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {contact.phone}
-                </a>
-              </dd>
-            </div>
-          )}
-
-          {contact.birthDate && (
-            <div className="flex items-center gap-2">
-              <dt className="text-gray-600">Birth Date:</dt>
-              <dd className="text-gray-900">{formatDate(contact.birthDate)}</dd>
-            </div>
-          )}
-
-          <div className="flex items-center gap-2 pt-2">
-            <dt className="text-gray-600">Created:</dt>
-            <dd className="text-gray-900 text-xs">
-              {formatDate(contact.createdAt)}
-            </dd>
+        {contact.phone && (
+          <div className="flex items-center gap-3 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            <Phone className="w-4 h-4 text-sky-500 flex-shrink-0" />
+            <a href={`tel:${contact.phone}`} className="hover:underline">
+              {contact.phone}
+            </a>
           </div>
-        </dl>
+        )}
 
-        <div className="mt-6 flex gap-2">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => onEdit(contact)}
-            className="flex-1"
-          >
-            Edit
-          </Button>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => onDelete(contact.id)}
-            className="flex-1"
-          >
-            Delete
-          </Button>
+        {contact.birthDate && (
+          <div className="flex items-center gap-3 text-sm text-gray-600">
+            <Calendar className="w-4 h-4 text-sky-500 flex-shrink-0" />
+            <span>{formatDate(contact.birthDate)}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Timestamps */}
+      <div className="mb-4 pb-4 border-t border-gray-400">
+        <div className="flex flex-col gap-1 mt-3 text-xs text-gray-500">
+          <p>Criado: {formatDate(contact.createdAt)}</p>
+          {contact.updatedAt && contact.updatedAt !== contact.createdAt && (
+            <p>Atualizado: {formatDate(contact.updatedAt)}</p>
+          )}
         </div>
+      </div>
+
+      {/* Ações */}
+      <div className="flex gap-2">
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => onEdit(contact)}
+          icon={<Edit2 className="w-4 h-4" />}
+          className="flex-1 text-xs"
+        >
+          Editar
+        </Button>
+        <Button
+          variant="danger"
+          size="md"
+          onClick={() => onDelete(contact.id)}
+          icon={<Trash2 className="w-4 h-4" />}
+          className="flex-1 text-xs"
+        >
+          Deletar
+        </Button>
       </div>
     </div>
   );

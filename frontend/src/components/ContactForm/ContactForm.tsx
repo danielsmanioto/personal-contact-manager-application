@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Contact, ContactRequest } from '../../types';
 import { contactSchema, type ContactFormData } from '../../utils/validation';
-import Button from '../Common/Button';
-import Input from '../Common/Input';
+import { Button } from '../atoms';
+import { FormField } from '../molecules';
+import { Mail, Phone, Calendar, User } from 'lucide-react';
 
 interface ContactFormProps {
   initialValues?: Contact;
@@ -24,6 +25,7 @@ export default function ContactForm({
     handleSubmit,
     reset,
     formState: { errors },
+    watch,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -33,6 +35,8 @@ export default function ContactForm({
       birthDate: initialValues?.birthDate || '',
     },
   });
+
+  const formValues = watch();
 
   useEffect(() => {
     if (initialValues) {
@@ -49,67 +53,84 @@ export default function ContactForm({
     await onSubmit(data as ContactRequest);
   };
 
+  const isFormValid = formValues.name && formValues.email && !Object.keys(errors).length;
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <Input
-            label="Name"
-            placeholder="John Doe"
-            {...register('name')}
-            error={errors.name?.message}
-            disabled={isLoading}
-          />
-        </div>
-
-        <div className="sm:col-span-2">
-          <Input
-            label="Email"
-            type="email"
-            placeholder="john@example.com"
-            {...register('email')}
-            error={errors.email?.message}
-            disabled={isLoading}
-          />
-        </div>
-
-        <Input
-          label="Phone"
-          placeholder="1234567890"
-          {...register('phone')}
-          error={errors.phone?.message}
-          helperText="10-20 digits (optional)"
+      <div className="space-y-6">
+        {/* Name Field */}
+        <FormField
+          id="name"
+          label="Nome Completo"
+          placeholder="João da Silva"
+          icon={<User className="w-4 h-4" />}
+          hint="Máximo 255 caracteres"
+          required
           disabled={isLoading}
+          error={errors.name?.message}
+          {...register('name')}
         />
 
-        <Input
-          label="Birth Date"
-          type="date"
-          {...register('birthDate')}
-          error={errors.birthDate?.message}
-          helperText="Optional"
+        {/* Email Field */}
+        <FormField
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="seu@email.com"
+          icon={<Mail className="w-4 h-4" />}
+          hint="Formato: nome@dominio.com"
+          required
           disabled={isLoading}
+          error={errors.email?.message}
+          {...register('email')}
+        />
+
+        {/* Phone Field */}
+        <FormField
+          id="phone"
+          label="Telefone"
+          placeholder="(11) 98765-4321"
+          icon={<Phone className="w-4 h-4" />}
+          hint="Opcional - 10 a 20 dígitos"
+          disabled={isLoading}
+          error={errors.phone?.message}
+          {...register('phone')}
+        />
+
+        {/* Birth Date Field */}
+        <FormField
+          id="birthDate"
+          label="Data de Nascimento"
+          type="date"
+          icon={<Calendar className="w-4 h-4" />}
+          hint="Opcional - Apenas datas passadas"
+          disabled={isLoading}
+          error={errors.birthDate?.message}
+          {...register('birthDate')}
         />
       </div>
 
-      <div className="flex gap-3">
+      {/* Action Buttons */}
+      <div className="flex gap-3 pt-4 border-t border-gray-400">
         <Button
           type="submit"
           variant="primary"
-          disabled={isLoading}
+          size="lg"
+          disabled={isLoading || !isFormValid}
           isLoading={isLoading}
           className="flex-1"
         >
-          {initialValues ? 'Update Contact' : 'Create Contact'}
+          {initialValues ? '✎ Atualizar Contato' : '+ Criar Contato'}
         </Button>
         <Button
           type="button"
           variant="secondary"
+          size="lg"
           onClick={onCancel}
           disabled={isLoading}
           className="flex-1"
         >
-          Cancel
+          Cancelar
         </Button>
       </div>
     </form>
