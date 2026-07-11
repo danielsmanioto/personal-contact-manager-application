@@ -11,29 +11,33 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, helperText, type = 'text', className = '', icon, ...props }, ref) => {
-    const baseStyles = 'w-full px-12 py-8 text-base border-2 rounded-md transition-colors focus-visible:outline-none focus-visible:border-primary-500'
-    const borderColor = error ? 'border-error-DEFAULT' : props.disabled ? 'border-neutral-300' : 'border-neutral-200'
+  ({ label, error, helperText, type = 'text', className = '', icon, id, required, disabled, ...props }, ref) => {
+    const baseStyles = 'w-full px-4 py-3 text-base border-2 rounded-md transition-colors focus-visible:outline-none focus-visible:border-primary-500'
+    const borderColor = error ? 'border-error-DEFAULT' : disabled ? 'border-neutral-300' : 'border-neutral-200'
     const focusColor = error ? 'focus:border-error-DEFAULT' : 'focus:border-primary-500'
+    const iconPadding = icon ? 'pl-10' : ''
 
     return (
       <div className="flex flex-col gap-4">
         {label && (
-          <label htmlFor={props.id} className="text-sm font-medium text-neutral-700">
+          <label htmlFor={id} className="text-sm font-medium text-neutral-700">
             {label}
-            {props.required && <span className="text-error-DEFAULT ml-2">*</span>}
+            {required && <span className="text-error-DEFAULT ml-2">*</span>}
           </label>
         )}
         <div className="relative">
           {icon && (
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 pointer-events-none">
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-500 pointer-events-none flex items-center">
               {icon}
             </div>
           )}
           <input
             ref={ref}
+            id={id}
             type={type}
-            className={`${baseStyles} ${borderColor} ${focusColor} disabled:bg-neutral-100 disabled:cursor-not-allowed ${icon ? 'pl-10' : ''} ${className}`}
+            disabled={disabled}
+            required={required}
+            className={`${baseStyles} ${borderColor} ${focusColor} ${iconPadding} disabled:bg-neutral-100 disabled:cursor-not-allowed ${className}`}
             {...props}
           />
         </div>
