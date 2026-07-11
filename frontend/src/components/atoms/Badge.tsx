@@ -1,32 +1,41 @@
-import { ReactNode } from 'react';
-import { cn } from '../../utils/cn';
+import React from 'react'
 
-export type BadgeVariant = 'primary' | 'success' | 'warning' | 'error' | 'info';
+type BadgeVariant = 'primary' | 'success' | 'warning' | 'error' | 'info'
+type BadgeSize = 'sm' | 'md'
 
-interface BadgeProps {
-  children: ReactNode;
-  variant?: BadgeVariant;
-  className?: string;
+interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  children: React.ReactNode
+  variant?: BadgeVariant
+  size?: BadgeSize
+  icon?: React.ReactNode
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  primary: 'bg-sky-50 text-sky-600',
-  success: 'bg-emerald-50 text-emerald-600',
-  warning: 'bg-amber-50 text-amber-600',
-  error: 'bg-red-50 text-red-600',
-  info: 'bg-sky-50 text-sky-600',
-};
+  primary: 'bg-primary-100 text-primary-700',
+  success: 'bg-green-100 text-green-700',
+  warning: 'bg-yellow-100 text-yellow-700',
+  error: 'bg-red-100 text-red-700',
+  info: 'bg-blue-100 text-blue-700',
+}
 
-export const Badge = ({ children, variant = 'primary', className }: BadgeProps) => {
-  return (
-    <span
-      className={cn(
-        'inline-block px-3 py-1 rounded-full text-xs font-semibold',
-        variantStyles[variant],
-        className
-      )}
-    >
-      {children}
-    </span>
-  );
-};
+const sizeStyles: Record<BadgeSize, string> = {
+  sm: 'px-8 py-2 text-xs',
+  md: 'px-12 py-4 text-sm',
+}
+
+export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
+  ({ children, variant = 'primary', size = 'sm', icon, ...props }, ref) => {
+    return (
+      <span
+        ref={ref}
+        className={`inline-flex items-center gap-4 font-medium rounded-full ${variantStyles[variant]} ${sizeStyles[size]}`}
+        {...props}
+      >
+        {icon && <span>{icon}</span>}
+        {children}
+      </span>
+    )
+  }
+)
+
+Badge.displayName = 'Badge'

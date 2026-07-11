@@ -1,67 +1,39 @@
-import { InputHTMLAttributes, ReactNode } from 'react';
-import { cn } from '../../utils/cn';
+import React from 'react'
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-  icon?: ReactNode;
-  required?: boolean;
-  hint?: string;
+type InputType = 'text' | 'email' | 'password' | 'tel' | 'url' | 'number'
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string
+  error?: string
+  helperText?: string
+  type?: InputType
 }
 
-export const Input = ({
-  label,
-  error,
-  icon,
-  required,
-  hint,
-  className,
-  id,
-  ...props
-}: InputProps) => {
-  const inputId = id || `input-${Math.random()}`;
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, helperText, type = 'text', className = '', ...props }, ref) => {
+    const baseStyles = 'w-full px-12 py-8 text-base border-2 rounded-md transition-colors focus-visible:outline-none focus-visible:border-primary-500'
+    const borderColor = error ? 'border-error-DEFAULT' : props.disabled ? 'border-neutral-300' : 'border-neutral-200'
+    const focusColor = error ? 'focus:border-error-DEFAULT' : 'focus:border-primary-500'
 
-  return (
-    <div className="w-full">
-      {label && (
-        <label htmlFor={inputId} className="block text-sm font-semibold text-gray-900 mb-2">
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
-      )}
-
-      <div className="relative">
-        {icon && <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">{icon}</div>}
-
+    return (
+      <div className="flex flex-col gap-4">
+        {label && (
+          <label htmlFor={props.id} className="text-sm font-medium text-neutral-700">
+            {label}
+            {props.required && <span className="text-error-DEFAULT ml-2">*</span>}
+          </label>
+        )}
         <input
-          id={inputId}
-          className={cn(
-            'w-full px-4 py-3 rounded-md border transition-all duration-200 font-inter',
-            'focus:outline-none focus:ring-2 focus:ring-sky-500',
-            icon ? 'pl-10' : '',
-            error
-              ? 'border-red-500 focus:border-red-500'
-              : 'border-gray-400 focus:border-sky-500',
-            className
-          )}
+          ref={ref}
+          type={type}
+          className={`${baseStyles} ${borderColor} ${focusColor} disabled:bg-neutral-100 disabled:cursor-not-allowed ${className}`}
           {...props}
         />
-
-        {!error && props.value && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600">
-            ✓
-          </div>
-        )}
-
-        {error && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
-            ✕
-          </div>
-        )}
+        {error && <p className="text-sm text-error-DEFAULT flex items-center gap-2">❌ {error}</p>}
+        {helperText && !error && <p className="text-sm text-neutral-500">{helperText}</p>}
       </div>
+    )
+  }
+)
 
-      {error && <p className="mt-2 text-sm text-red-500 font-medium">{error}</p>}
-      {hint && !error && <p className="mt-2 text-xs text-gray-600">{hint}</p>}
-    </div>
-  );
-};
+Input.displayName = 'Input'

@@ -1,122 +1,65 @@
-# Frontend - Personal Contact Manager
+# Personal Contact Manager - Frontend
 
-A modern React 18 + TypeScript + Vite application for managing personal contacts.
+Modern React 18 frontend with TypeScript, Tailwind CSS, and Magic UI inspired design system.
 
-## Tech Stack
-
-- **React 18** - UI library
-- **TypeScript** - Type safety
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **React Hook Form** - Form management
-- **Zod** - Validation
-- **Axios** - HTTP client
-- **Vitest** - Testing framework
-- **ESLint + Prettier** - Code quality
-
-## Setup Instructions
-
-### Prerequisites
-
-- Node.js 20+
-- npm 11+
-
-### Installation
+## Quick Start
 
 ```bash
 npm install
-```
-
-### Development
-
-```bash
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### Build
+## Development
 
+### Running Tests
 ```bash
-npm run build
+npm run test              # Unit tests
+npm run test:visual       # Visual regression tests
+npm run test:a11y         # Accessibility tests
+npm run test -- --coverage  # Coverage report
 ```
 
-Production build will be created in the `dist/` directory.
-
-### Testing
-
+### Running Storybook
 ```bash
-# Run tests
-npm run test
-
-# Run tests with coverage
-npm run test:coverage
+npm run storybook
 ```
+
+Open [http://localhost:6006](http://localhost:6006)
 
 ### Linting & Formatting
-
 ```bash
-# Run ESLint
 npm run lint
-
-# Format code with Prettier
 npm run format
-```
-
-## Environment Variables
-
-Create `.env.local` for development:
-
-```env
-VITE_API_URL=http://localhost:8081/api
 ```
 
 ## Project Structure
 
 ```
-frontend/
-├── src/
-│   ├── components/    # React components
-│   ├── hooks/         # Custom React hooks
-│   ├── services/      # API services
-│   ├── types/         # TypeScript types
-│   ├── utils/         # Utility functions
-│   ├── App.tsx        # Main app component
-│   ├── App.css        # App styles
-│   └── main.tsx       # Entry point
-├── public/            # Static files
-├── tailwind.config.js # Tailwind configuration
-├── tsconfig.json      # TypeScript configuration
-├── vite.config.ts     # Vite configuration
-├── vitest.config.ts   # Vitest configuration
-└── Dockerfile         # Docker configuration
+src/
+├── components/
+│   ├── atoms/         # Base UI elements
+│   ├── molecules/     # Composed components
+│   ├── organisms/     # Page-level components
+│   └── layouts/       # Page layouts
+├── design-tokens/     # Colors, typography, spacing
+├── styles/           # Global styles
+├── utils/            # Helper functions
+└── hooks/            # Custom React hooks
 ```
 
-## Docker
+## Design System
 
-Build Docker image:
+See Storybook for complete component documentation and design token guide.
 
-```bash
-docker build -t contact-manager-frontend .
-```
+## Browser Support
 
-Run container:
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
-```bash
-docker run -p 80:80 contact-manager-frontend
-```
+## Accessibility
 
-## Code Quality
-
-- **TypeScript Strict Mode** - Enabled
-- **ESLint Rules** - No console.log in production
-- **Test Coverage** - Target 80%+
-- **Prettier** - Auto-formatting
-
-## Development Notes
-
-- No `any` types allowed
-- All functions must have explicit return types
-- No `console.log` allowed (use for debugging only)
-- Components should be functional with hooks
-- Keep components focused and reusable
+WCAG 2.1 Level AA compliant. All interactive elements are keyboard navigable and screen reader compatible.

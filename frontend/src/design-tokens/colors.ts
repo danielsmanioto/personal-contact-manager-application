@@ -1,0 +1,47 @@
+export const colorPalette = {
+  primary: {
+    50: '#f9f5ff',
+    100: '#f3ebff',
+    200: '#e7d7ff',
+    300: '#dbc3ff',
+    400: '#cf9fff',
+    500: '#c37bff',
+    600: '#a855ff',
+    700: '#8b2ff9',
+    800: '#6d1ee0',
+    900: '#4f0fc4',
+    950: '#2d0080',
+  },
+  accent: {
+    50: '#fef3f2',
+    100: '#fee4e2',
+    200: '#fecdca',
+    300: '#fda29b',
+    400: '#f97066',
+    500: '#f04438',
+    600: '#d92d20',
+    700: '#b42318',
+    800: '#912018',
+    900: '#55160c',
+  },
+  neutral: {
+    50: '#f9fafb',
+    100: '#f3f4f6',
+    200: '#e5e7eb',
+    300: '#d1d5db',
+    400: '#9ca3af',
+    500: '#6b7280',
+    600: '#4b5563',
+    700: '#374151',
+    800: '#1f2937',
+    900: '#111827',
+  },
+  semantic: {
+    success: { light: '#d1e7dd', base: '#28a745', dark: '#155724' },
+    warning: { light: '#fff3cd', base: '#ffc107', dark: '#856404' },
+    error: { light: '#f8d7da', base: '#dc3545', dark: '#721c24' },
+    info: { light: '#d1ecf1', base: '#17a2b8', dark: '#0c5460' },
+  },
+} as const
+
+export type ColorPalette = typeof colorPalette

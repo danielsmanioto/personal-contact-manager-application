@@ -1,35 +1,48 @@
-import { InputHTMLAttributes, ReactNode } from 'react';
-import { Input } from '../atoms';
-import { cn } from '../../utils/cn';
+import React from 'react'
+import { Input } from '@components/atoms'
 
-interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
-  error?: string;
-  icon?: ReactNode;
-  hint?: string;
-  required?: boolean;
-  className?: string;
+interface FormFieldProps {
+  label: string
+  name: string
+  type?: string
+  value: string
+  onChange: (value: string) => void
+  error?: string
+  helperText?: string
+  required?: boolean
+  disabled?: boolean
+  placeholder?: string
 }
 
-export const FormField = ({
+export const FormField: React.FC<FormFieldProps> = ({
   label,
+  name,
+  type = 'text',
+  value,
+  onChange,
   error,
-  icon,
-  hint,
+  helperText,
   required,
-  className,
-  ...props
-}: FormFieldProps) => {
+  disabled,
+  placeholder,
+}) => {
   return (
-    <div className={cn('mb-4', className)}>
-      <Input
-        label={label}
-        error={error}
-        icon={icon}
-        hint={hint}
-        required={required}
-        {...props}
-      />
-    </div>
-  );
-};
+    <Input
+      id={name}
+      name={name}
+      type={type}
+      label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      error={error}
+      helperText={helperText}
+      required={required}
+      disabled={disabled}
+      placeholder={placeholder}
+      aria-invalid={!!error}
+      aria-describedby={error ? `${name}-error` : undefined}
+    />
+  )
+}
+
+FormField.displayName = 'FormField'

@@ -61,9 +61,16 @@ for i in {1..60}; do
 done
 echo ""
 
+# Install frontend dependencies if needed
+echo -e "${BLUE}[3/3]${NC} Preparando Frontend (React + Vite)..."
+cd "$PROJECT_ROOT/frontend"
+if [ ! -d "node_modules" ]; then
+    echo "  📦 Instalando dependências do frontend..."
+    npm install > "$PROJECT_ROOT/.frontend.log" 2>&1
+fi
+
 # Start frontend
 echo -e "${BLUE}[3/3]${NC} Iniciando Frontend (React + Vite)..."
-cd "$PROJECT_ROOT/frontend"
 npm run dev > "$PROJECT_ROOT/.frontend.log" 2>&1 &
 FRONTEND_PID=$!
 echo -e "${GREEN}✅ Frontend iniciado (PID: $FRONTEND_PID)${NC}"

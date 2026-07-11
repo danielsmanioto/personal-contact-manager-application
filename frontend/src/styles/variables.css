@@ -1,0 +1,46 @@
+:root {
+  /* Primary Colors */
+  --color-primary-50: #f9f5ff;
+  --color-primary-500: #c37bff;
+  --color-primary-600: #a855ff;
+  --color-primary-700: #8b2ff9;
+
+  /* Neutral Colors */
+  --color-neutral-50: #f9fafb;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-700: #374151;
+  --color-neutral-900: #111827;
+
+  /* Semantic Colors */
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-error: #dc3545;
+  --color-info: #17a2b8;
+
+  /* Typography */
+  --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-base: 14px;
+  --font-weight-normal: 400;
+  --line-height-normal: 1.5;
+
+  /* Spacing */
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+
+  /* Animations */
+  --duration-normal: 300ms;
+  --easing-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Shadows */
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  /* Z-index */
+  --z-dropdown: 1000;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
