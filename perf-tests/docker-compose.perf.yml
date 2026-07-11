@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  k6:
+    image: grafana/k6:latest
+    container_name: contact-manager-k6
+    volumes:
+      - ./k6:/scripts
+      - ./results:/results
+    environment:
+      API_URL: ${API_URL:-http://backend:8080/api}
+      CONTACT_COUNT: ${CONTACT_COUNT:-10000}
+      TEST_DURATION_SOAK: ${TEST_DURATION_SOAK:-60}
+      K6_VUS: ${K6_VUS:-}
+      K6_DURATION: ${K6_DURATION:-}
+    networks:
+      - contact-manager-net
+    command: echo "k6 ready - run specific scenario with: docker-compose run k6 run /scripts/scenarios/smoke.js"
+    depends_on:
+      - backend
+
+  # Optional: Toxiproxy for connection-level fault injection
+  toxiproxy:
+    image: shopify/toxiproxy:2.5.0
+    container_name: contact-manager-toxiproxy
+    ports:
+      - "8474:8474"  # Toxiproxy admin API
+      - "20000:20000"  # Proxy for backend
+      - "20001:20001"  # Proxy for Postgres
+    volumes:
+      - ./toxiproxy-config.json:/config/toxiproxy-config.json
+    networks:
+      - contact-manager-net
+    profiles:
+      - chaos  # Only start when needed: docker-compose --profile chaos up
+
+  # Optional: InfluxDB for metrics collection
+  influxdb:
+    image: influxdb:2.7
+    container_name: contact-manager-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USER:-admin}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD:-password}
+      DOCKER_INFLUXDB_INIT_ORG: contact-manager
+      DOCKER_INFLUXDB_INIT_BUCKET: k6-metrics
+      DOCKER_INFLUXDB_INIT_RETENTION: 90d
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN:-admin-token-12345}
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+    networks:
+      - contact-manager-net
+    profiles:
+      - visualization  # Only start when needed: docker-compose --profile visualization up
+
+  # Optional: Grafana for dashboards
+  grafana:
+    image: grafana/grafana:10.2
+    container_name: contact-manager-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: grafana-clock-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana-provisioning:/etc/grafana/provisioning
+    networks:
+      - contact-manager-net
+    depends_on:
+      - influxdb
+    profiles:
+      - visualization  # Only start when needed
+
+networks:
+  contact-manager-net:
+    external: true
+
+volumes:
+  influxdb-data:
+  grafana-data:
