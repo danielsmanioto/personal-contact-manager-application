@@ -40,11 +40,10 @@ export default function ContactForm({
 
   const formValues = watch();
 
-  // Manual validity check - button enables when required fields are filled and valid
+  // Manual validity check - button enables when required fields are filled
   const hasName = formValues.name && formValues.name.trim().length > 0;
   const hasEmail = formValues.email && formValues.email.trim().length > 0;
-  const hasNoErrors = Object.keys(errors).length === 0;
-  const isFormValid = hasName && hasEmail && hasNoErrors;
+  const isFormValid = hasName && hasEmail;
 
   useEffect(() => {
     if (initialValues) {
