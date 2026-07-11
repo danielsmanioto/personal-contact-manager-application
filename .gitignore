@@ -18,6 +18,8 @@ npm-debug.log
 yarn-error.log
 dist/
 build/
+.npm/
+.yarn-cache/
 
 # Java/Maven
 target/
@@ -45,6 +47,11 @@ __pycache__/
 # Logs
 *.log
 logs/
+
+# Process IDs
+.pids
+*.pid
+*.pid.lock
 
 # Temporary files
 *.tmp
