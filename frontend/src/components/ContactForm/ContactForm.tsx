@@ -40,11 +40,6 @@ export default function ContactForm({
 
   const formValues = watch();
 
-  // Manual validity check - button enables when required fields are filled
-  const hasName = formValues.name && formValues.name.trim().length > 0;
-  const hasEmail = formValues.email && formValues.email.trim().length > 0;
-  const isFormValid = hasName && hasEmail;
-
   useEffect(() => {
     if (initialValues) {
       reset({
@@ -121,7 +116,7 @@ export default function ContactForm({
           type="submit"
           variant="primary"
           size="lg"
-          disabled={isLoading || !isFormValid}
+          disabled={isLoading || !isValid}
           isLoading={isLoading}
           className="flex-1"
         >
