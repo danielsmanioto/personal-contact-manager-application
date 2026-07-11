@@ -11,14 +11,15 @@ export const contactSchema = z.object({
     .email('Please enter a valid email address'),
   phone: z
     .string()
+    .optional()
     .transform(val => val?.trim() || '')
     .refine(
       (val) => !val || /^[0-9]{10,20}$/.test(val),
       'Phone must be 10-20 digits'
-    )
-    .optional(),
+    ),
   birthDate: z
     .string()
+    .optional()
     .transform(val => val?.trim() || '')
     .refine(
       (val) => !val || !isNaN(Date.parse(val)),
@@ -28,8 +29,7 @@ export const contactSchema = z.object({
       if (!val) return true;
       const date = new Date(val);
       return date <= new Date();
-    }, 'Birth date must be in the past')
-    .optional(),
+    }, 'Birth date must be in the past'),
 });
 
 export type ContactFormData = z.infer<typeof contactSchema>;

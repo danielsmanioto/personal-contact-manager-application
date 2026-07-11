@@ -24,11 +24,12 @@ export default function ContactForm({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
     watch,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     mode: 'onChange',
+    shouldFocusError: true,
     defaultValues: {
       name: initialValues?.name || '',
       email: initialValues?.email || '',
