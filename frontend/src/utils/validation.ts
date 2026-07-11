@@ -11,6 +11,7 @@ export const contactSchema = z.object({
     .email('Please enter a valid email address'),
   phone: z
     .string()
+    .transform(val => val?.trim() || '')
     .refine(
       (val) => !val || /^[0-9]{10,20}$/.test(val),
       'Phone must be 10-20 digits'
@@ -18,6 +19,7 @@ export const contactSchema = z.object({
     .optional(),
   birthDate: z
     .string()
+    .transform(val => val?.trim() || '')
     .refine(
       (val) => !val || !isNaN(Date.parse(val)),
       'Please enter a valid date'

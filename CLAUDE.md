@@ -97,3 +97,7 @@ npm run build           # Production build
 - Target 80%+ test coverage for both layers
 - No console.log in production code
 - Use SLF4J for backend logging
+
+<!-- SPECKIT START -->
+**Current Feature Plan**: [specs/003-create-contact/plan.md](specs/003-create-contact/plan.md) — Create Contact with Validated Form (in-progress)
+<!-- SPECKIT END -->

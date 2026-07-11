@@ -24,10 +24,11 @@ export default function ContactForm({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
+    mode: 'onChange',
     defaultValues: {
       name: initialValues?.name || '',
       email: initialValues?.email || '',
@@ -52,8 +53,6 @@ export default function ContactForm({
   const handleFormSubmit = async (data: ContactFormData) => {
     await onSubmit(data as ContactRequest);
   };
-
-  const isFormValid = formValues.name && formValues.email && !Object.keys(errors).length;
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
@@ -116,7 +115,7 @@ export default function ContactForm({
           type="submit"
           variant="primary"
           size="lg"
-          disabled={isLoading || !isFormValid}
+          disabled={isLoading || !isValid}
           isLoading={isLoading}
           className="flex-1"
         >
