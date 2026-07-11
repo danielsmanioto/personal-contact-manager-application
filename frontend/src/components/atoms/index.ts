@@ -6,6 +6,7 @@ export { Divider } from './Divider'
 export { Heading1, Heading2, Heading3, Paragraph, Label, Caption } from './Typography'
 export { Tooltip } from './Tooltip'
 export { Icon } from './Icon'
+export { Spinner } from './Spinner'
 
 export type { ButtonProps } from './Button'
 export type { InputProps } from './Input'
