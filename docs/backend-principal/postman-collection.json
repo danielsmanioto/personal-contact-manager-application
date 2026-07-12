@@ -1,0 +1,568 @@
+{
+  "info": {
+    "name": "Contact Manager API - Backend Principal",
+    "description": "Coleção Postman para testar todos os endpoints da API REST de Contact Manager",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Contacts",
+      "description": "CRUD operations para contactos",
+      "item": [
+        {
+          "name": "List All Contacts (Paginated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has correct structure', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('content');",
+                  "  pm.expect(jsonData).to.have.property('currentPage');",
+                  "  pm.expect(jsonData).to.have.property('pageSize');",
+                  "  pm.expect(jsonData).to.have.property('totalElements');",
+                  "  pm.expect(jsonData).to.have.property('totalPages');",
+                  "});",
+                  "",
+                  "// Save first contact ID for other requests",
+                  "if (pm.response.json().content && pm.response.json().content.length > 0) {",
+                  "  pm.environment.set('contactId', pm.response.json().content[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contacts?page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contacts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (0-indexed)"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "Retorna lista paginada de todos os contactos activos (não deletados)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Contact by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Contact has required fields', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('id');",
+                  "  pm.expect(jsonData).to.have.property('name');",
+                  "  pm.expect(jsonData).to.have.property('email');",
+                  "  pm.expect(jsonData).to.have.property('createdAt');",
+                  "  pm.expect(jsonData).to.have.property('updatedAt');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contacts/{{contactId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "{{contactId}}"
+              ]
+            },
+            "description": "Retorna detalhes de um contacto específico pelo UUID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Contact created with correct data', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('id');",
+                  "  pm.expect(jsonData.name).to.equal('João Silva');",
+                  "  pm.expect(jsonData.email).to.equal('joao.silva@example.com');",
+                  "  pm.expect(jsonData).to.have.property('createdAt');",
+                  "  pm.expect(jsonData).to.have.property('updatedAt');",
+                  "});",
+                  "",
+                  "// Save created contact ID for other requests",
+                  "pm.environment.set('createdContactId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao.silva@example.com\",\n  \"phone\": \"5511987654321\",\n  \"birthDate\": \"1990-05-15\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/contacts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contacts"
+              ]
+            },
+            "description": "Cria um novo contacto. Email deve ser único."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Contact updated with correct data', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.name).to.equal('João Silva Atualizado');",
+                  "  pm.expect(jsonData.email).to.equal('joao.silva.novo@example.com');",
+                  "  pm.expect(jsonData).to.have.property('updatedAt');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João Silva Atualizado\",\n  \"email\": \"joao.silva.novo@example.com\",\n  \"phone\": \"5511999999999\",\n  \"birthDate\": \"1990-05-15\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/contacts/{{createdContactId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "{{createdContactId}}"
+              ]
+            },
+            "description": "Atualiza um contacto existente. Email deve ser único e não pode ser de outro contacto."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Contact (Soft Delete)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 204 No Content', function () {",
+                  "  pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "pm.test('Response body is empty', function () {",
+                  "  pm.expect(pm.response.text()).to.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/contacts/{{createdContactId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "{{createdContactId}}"
+              ]
+            },
+            "description": "Soft delete de um contacto. Marca como deletado mas não remove do banco (para auditoria)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Search & Filter",
+      "description": "Busca e filtro de contactos",
+      "item": [
+        {
+          "name": "Search by Name or Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has pagination structure', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('content');",
+                  "  pm.expect(jsonData).to.have.property('currentPage');",
+                  "  pm.expect(jsonData).to.have.property('totalElements');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contacts/search?q=João&page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "João",
+                  "description": "Search term (name or email)"
+                },
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "Busca contactos por nome ou email (case-insensitive). Suporta busca parcial."
+          },
+          "response": []
+        },
+        {
+          "name": "Search by Email",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contacts/search?q=joao@example.com&page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "joao@example.com",
+                  "description": "Search by exact email"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Busca contacto por email específico"
+          },
+          "response": []
+        },
+        {
+          "name": "Filter by Birth Date Range",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has pagination structure', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('content');",
+                  "  pm.expect(jsonData).to.have.property('currentPage');",
+                  "  pm.expect(jsonData).to.have.property('totalElements');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contacts/filter?fromDate=1990-01-01&toDate=2000-12-31&page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contacts",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "fromDate",
+                  "value": "1990-01-01",
+                  "description": "Start date (ISO 8601: YYYY-MM-DD)"
+                },
+                {
+                  "key": "toDate",
+                  "value": "2000-12-31",
+                  "description": "End date (ISO 8601: YYYY-MM-DD)"
+                },
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "Filtra contactos por intervalo de data de nascimento (YYYY-MM-DD)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health & Documentation",
+      "description": "Health check e documentação da API",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('API is UP', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.status).to.equal('UP');",
+                  "});",
+                  "",
+                  "pm.test('Database is connected', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.components.db.status).to.equal('UP');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Verifica se a API está rodando e o banco está conectado"
+          },
+          "response": []
+        },
+        {
+          "name": "OpenAPI Spec (JSON)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v3/api-docs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v3",
+                "api-docs"
+              ]
+            },
+            "description": "OpenAPI 3.0 specification in JSON format"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set default environment variables if not set",
+          "if (!pm.environment.get('baseUrl')) {",
+          "  pm.environment.set('baseUrl', 'http://localhost:8081');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script - logs response times",
+          "console.log('Response time: ' + pm.response.responseTime + 'ms');"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "string",
+      "description": "Base URL da API (development)"
+    },
+    {
+      "key": "contactId",
+      "value": "",
+      "type": "string",
+      "description": "ID do contacto para usar em GET by ID"
+    },
+    {
+      "key": "createdContactId",
+      "value": "",
+      "type": "string",
+      "description": "ID do contacto criado (usado em UPDATE/DELETE)"
+    }
+  ]
+}
