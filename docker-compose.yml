@@ -21,7 +21,7 @@ services:
       - contact-manager-net
 
   mongo:
-    image: mongo:5.0-alpine
+    image: mongo:latest
     container_name: alert-service-db
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
