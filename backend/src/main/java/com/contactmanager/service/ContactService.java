@@ -1,5 +1,6 @@
 package com.contactmanager.service;
 
+import com.contactmanager.client.AlertClient;
 import com.contactmanager.dto.ContactRequest;
 import com.contactmanager.dto.ContactResponse;
 import com.contactmanager.entity.Contact;
@@ -30,9 +31,11 @@ public class ContactService {
 
     private static final Logger log = LoggerFactory.getLogger(ContactService.class);
     private final ContactRepository contactRepository;
+    private final AlertClient alertClient;
 
-    public ContactService(ContactRepository contactRepository) {
+    public ContactService(ContactRepository contactRepository, AlertClient alertClient) {
         this.contactRepository = contactRepository;
+        this.alertClient = alertClient;
     }
 
     /**
@@ -59,6 +62,21 @@ public class ContactService {
 
         Contact savedContact = contactRepository.save(contact);
         log.info("Contact created with ID: {}", savedContact.getId());
+
+        // Send alert to alert service (fire and forget)
+        try {
+            alertClient.sendAlert(
+                new AlertClient.AlertRequest(
+                    savedContact.getId().toString(),
+                    savedContact.getName(),
+                    savedContact.getEmail(),
+                    "CREATE",
+                    "Novo contacto criado: " + savedContact.getName()));
+            log.debug("Alert sent for contact: {}", savedContact.getId());
+        } catch (Exception e) {
+            log.warn("Failed to send alert for contact: {}", savedContact.getId(), e);
+            // Do not fail the contact creation if alert service is unavailable
+        }
 
         return mapToResponse(savedContact);
     }
