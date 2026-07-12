@@ -117,9 +117,42 @@ Ter uma réplica de leitura (read replica) do Postgres para distribuir consultas
 
 ---
 
+## BL-05 — Gestão de segredos com HashiCorp Vault
+
+**Prioridade:** Alta
+**Esforço estimado:** M (3-4 dias)
+
+### Contexto
+Hoje as credenciais (usuário/senha do Postgres, e qualquer outro segredo futuro — chave JWT, API keys) ficam em texto plano no `docker-compose.yml` e/ou `application.yml`, versionadas ou passadas via variável de ambiente sem nenhuma camada de proteção. Isso é o padrão mais comum de vazamento de credencial em projeto pequeno (arquivo commitado sem querer, `.env` exposto, etc.).
+
+### Objetivo
+Centralizar segredos no HashiCorp Vault, removendo credenciais em texto plano do repositório e dos arquivos de configuração — o backend passa a buscar os segredos do Vault em runtime.
+
+### Escopo
+- Adicionar serviço `vault` ao `docker-compose.yml` (imagem oficial `hashicorp/vault`), rodando em **dev mode** para ambiente local (`vault server -dev` — sobe já destravado, com token root fixo, ótimo pra estudar o fluxo sem lidar com unseal ainda).
+- Guardar no Vault (KV secrets engine v2) as credenciais do Postgres (`spring.datasource.username`/`password`) e qualquer outro segredo (ex: futuro JWT signing key).
+- Integrar o backend via `spring-cloud-starter-vault-config`: o Spring Boot passa a importar config do Vault com `spring.config.import: vault://` + `spring.cloud.vault.token` / `spring.cloud.vault.host` apontando pro serviço do compose.
+- Remover as credenciais de `application.yml` e do `docker-compose.yml` (env var direta) — só fica a referência de onde buscar no Vault.
+- Ajustar `depends_on` no compose pra o backend só subir depois do Vault estar pronto (healthcheck).
+- Documentar no `DATABASE_SETUP.md` como popular o Vault localmente (`vault kv put secret/contact-manager db-username=... db-password=...`).
+
+### Critérios de aceite
+- [ ] Nenhuma credencial de banco em texto plano no `docker-compose.yml` ou `application.yml` commitados.
+- [ ] Backend sobe normalmente buscando as credenciais do Vault em runtime.
+- [ ] `docker-compose up` funciona do zero (Vault sobe, é populado — manual ou via script de init — e o backend consegue se conectar ao Postgres usando o segredo vindo do Vault).
+- [ ] Guia documentado de como rodar localmente com Vault (inclusive como reobter o token de dev se o container reiniciar).
+
+### Riscos / dependências
+- **Dev mode não é produção**: o Vault em dev mode roda em memória (perde tudo ao reiniciar o container) e usa um token root fixo — ótimo pra aprender o conceito, mas se um dia for além do projeto pessoal, precisa estudar unseal, storage persistente (file/Postgres backend) e um método de autenticação melhor que token fixo (AppRole, por exemplo).
+- Adiciona uma dependência a mais no `docker-compose up` — se o Vault não subir ou não estiver populado, o backend falha ao iniciar. Vale um healthcheck bem definido pra não mascarar o problema.
+- Ordem de execução: vale fazer depois do BL-01 a BL-04 (que resolvem performance/resiliência) — Vault é uma melhoria de segurança/organização, não afeta os números de throughput/latência.
+
+---
+
 ## Ordem sugerida de execução
 
 1. **BL-03** — Circuit breaker (resolve o risco mais crítico: cascata de falha, menor esforço).
 2. **BL-01** — Cache Redis (reduz carga no banco, ganho rápido e visível).
 3. **BL-02** — Escalar horizontalmente (agora com BL-03 pronto, múltiplas instâncias não caem juntas).
 4. **BL-04** — Réplica de leitura (só se, após os itens acima, o banco ainda for o gargalo).
+5. **BL-05** — Vault (melhoria de segurança/organização, independente dos itens de performance acima — pode ser feita em paralelo se preferir).
