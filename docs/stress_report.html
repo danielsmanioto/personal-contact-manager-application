@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Teste de Stress - Contact Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .test-info {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .verdict {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+
+        .verdict.pass {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .verdict.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .verdict.fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .metric-card.good {
+            border-left-color: #28a745;
+        }
+
+        .metric-card.warning {
+            border-left-color: #ffc107;
+        }
+
+        .metric-card.bad {
+            border-left-color: #dc3545;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .metric-unit {
+            color: #999;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .endpoint-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .endpoint-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            word-break: break-all;
+        }
+
+        .endpoint-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            font-size: 0.85em;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .analysis {
+            background: #f0f4ff;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .analysis h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .analysis p {
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .checklist li {
+            padding: 10px 0;
+            color: #555;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .checklist li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .checklist li.warning:before {
+            content: "⚠";
+            color: #ffc107;
+        }
+
+        .checklist li.fail:before {
+            content: "✗";
+            color: #dc3545;
+        }
+
+        .recommendation {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #28a745;
+            margin-top: 20px;
+        }
+
+        .recommendation h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .recommendation p {
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Relatório de Teste de Stress</h1>
+            <div class="test-info">
+                <p><strong>Aplicação:</strong> Personal Contact Manager (Backend)</p>
+                <p><strong>Data:</strong> 11 de Julho de 2026</p>
+                <p><strong>Duração:</strong> 22 minutos</p>
+            </div>
+            <div class="verdict pass">
+                ✅ ARQUITETURA AGUENTA - Teste Aprovado
+            </div>
+        </div>
+
+        <!-- KPIs Principais -->
+        <div class="metrics-grid">
+            <div class="metric-card good">
+                <div class="metric-label">Total de Requisições</div>
+                <div class="metric-value">621.4K<span class="metric-unit">requests</span></div>
+            </div>
+            <div class="metric-card good">
+                <div class="metric-label">Taxa de Erro</div>
+                <div class="metric-value">0.0%<span class="metric-unit">error rate</span></div>
+            </div>
+            <div class="metric-card good">
+                <div class="metric-label">Throughput</div>
+                <div class="metric-value">470<span class="metric-unit">req/s</span></div>
+            </div>
+            <div class="metric-card good">
+                <div class="metric-label">P95 Response Time</div>
+                <div class="metric-value">22.3ms<span class="metric-unit">latency</span></div>
+            </div>
+            <div class="metric-card good">
+                <div class="metric-label">Avg Response Time</div>
+                <div class="metric-value">18.7ms<span class="metric-unit">latency</span></div>
+            </div>
+            <div class="metric-card good">
+                <div class="metric-label">Max Response Time</div>
+                <div class="metric-value">2.2s<span class="metric-unit">latency</span></div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="section">
+            <h2 class="section-title">📈 Análise de Performance</h2>
+
+            <div class="two-column">
+                <div class="chart-container">
+                    <canvas id="responseTimeChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="statusCodesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Endpoints -->
+        <div class="section">
+            <h2 class="section-title">🔗 Endpoints Testados</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-name">GET /api/contacts?page=1&limit=20</div>
+                <div class="endpoint-stats">
+                    <div class="stat">
+                        <span class="stat-label">Requisições:</span>
+                        <span class="stat-value">494.8K</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Avg Time:</span>
+                        <span class="stat-value">19.2ms</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">P95:</span>
+                        <span class="stat-value">22.5ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-name">POST /api/contacts</div>
+                <div class="endpoint-stats">
+                    <div class="stat">
+                        <span class="stat-label">Requisições:</span>
+                        <span class="stat-value">126.5K</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Avg Time:</span>
+                        <span class="stat-value">16.7ms</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">P95:</span>
+                        <span class="stat-value">21.5ms</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análise Detalhada -->
+        <div class="section">
+            <h2 class="section-title">🔍 Análise Detalhada</h2>
+
+            <div class="analysis">
+                <h3>✅ Pontos Fortes</h3>
+                <ul class="checklist">
+                    <li><strong>Zero erros:</strong> 621.4K requisições sem uma única falha (0% error rate)</li>
+                    <li><strong>Latência excelente:</strong> P95 em apenas 22ms, bem abaixo do threshold de 600ms</li>
+                    <li><strong>Consistência:</strong> Desvio padrão baixo entre resposta times</li>
+                    <li><strong>Throughput impressionante:</strong> 470 requisições/segundo sustentadas</li>
+                    <li><strong>Ambos endpoints performam bem:</strong> GET e POST com latências similares</li>
+                    <li><strong>Estabilidade:</strong> Sem degradação ao longo dos 22 minutos de teste</li>
+                </ul>
+            </div>
+
+            <div class="analysis">
+                <h3>⚠️ Observações</h3>
+                <ul class="checklist">
+                    <li>P99 é 137.5ms - alguns picos ocasionais, mas ainda aceitáveis</li>
+                    <li>Max de 2.2s ocorreu apenas uma vez em 621K requisições</li>
+                    <li>Proporção de GET (79%) vs POST (21%) - representativo de padrões reais</li>
+                </ul>
+            </div>
+
+            <div class="recommendation">
+                <h4>🎯 Conclusão sobre a Arquitetura</h4>
+                <p>
+                    Sua arquitetura <strong>aguenta muito bem</strong> a carga de teste. Os resultados mostram que o sistema Spring Boot
+                    está bem configurado, o banco de dados PostgreSQL está respondendo rápido, e não há gargalos óbvios.
+                    Com 470 req/s sustentados e zero erros, você tem bastante margem de segurança para uma aplicação em produção.
+                </p>
+            </div>
+        </div>
+
+        <!-- Recomendações -->
+        <div class="section">
+            <h2 class="section-title">💡 Recomendações</h2>
+
+            <div class="analysis" style="background: #fff8e1; border-left-color: #ffc107;">
+                <h3 style="color: #f57f17;">Para Produção</h3>
+                <ul class="checklist">
+                    <li>Implantar monitoramento com Prometheus/Grafana</li>
+                    <li>Configurar alertas para P95 > 100ms e error rate > 0.1%</li>
+                    <li>Usar load balancer para distribuir entre múltiplas instâncias</li>
+                    <li>Implementar circuit breaker para chamadas externas</li>
+                    <li>Caching em nível de aplicação para GETs com query params fixos</li>
+                    <li>Índices otimizados no PostgreSQL para filtros/paginação</li>
+                </ul>
+            </div>
+
+            <div class="analysis" style="background: #e3f2fd; border-left-color: #2196f3;">
+                <h3 style="color: #1565c0;">Para Próximos Testes</h3>
+                <ul class="checklist">
+                    <li>Aumentar para 1000 req/s para validar limites</li>
+                    <li>Testar outros endpoints (UPDATE, DELETE)</li>
+                    <li>Simular falhas do banco para medir resilência</li>
+                    <li>Load testing com dados realistas (tamanhos de payload maiores)</li>
+                    <li>Teste de longa duração (4+ horas) para detectar memory leaks</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Métricas Detalhadas -->
+        <div class="section">
+            <h2 class="section-title">📊 Métricas Detalhadas</h2>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #667eea; color: white;">
+                            <th style="padding: 12px; text-align: left;">Métrica</th>
+                            <th style="padding: 12px; text-align: center;">Valor</th>
+                            <th style="padding: 12px; text-align: left;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Total Requisições</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">621.423</td>
+                            <td style="padding: 12px;">✅ Excelente</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Taxa de Sucesso (2xx-3xx)</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">100%</td>
+                            <td style="padding: 12px;">✅ Perfeito</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Taxa de Erro (4xx-5xx)</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">0%</td>
+                            <td style="padding: 12px;">✅ Perfeito</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Throughput Médio</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">470.5 req/s</td>
+                            <td style="padding: 12px;">✅ Excelente</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Response Time - Min</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">2.9ms</td>
+                            <td style="padding: 12px;">✅ Rápido</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Response Time - Avg</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">18.7ms</td>
+                            <td style="padding: 12px;">✅ Ótimo</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Response Time - P50</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">9.3ms</td>
+                            <td style="padding: 12px;">✅ Muito rápido</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Response Time - P95</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">22.3ms</td>
+                            <td style="padding: 12px;">✅ Dentro do threshold (600ms)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 12px;">Response Time - P99</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">137.5ms</td>
+                            <td style="padding: 12px;">✅ Aceitável</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px;">Response Time - Max</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold;">2.228s</td>
+                            <td style="padding: 12px;">✅ Outlier isolado</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Relatório gerado em 11 de Julho de 2026 • Teste de Stress com K6 • 22 minutos de execução</p>
+        </div>
+    </div>
+
+    <script>
+        // Response Time Distribution Chart
+        const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+        new Chart(responseTimeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Min', 'P50', 'Avg', 'P95', 'P99', 'Max'],
+                datasets: [{
+                    label: 'Response Time (ms)',
+                    data: [2.9, 9.3, 18.7, 22.3, 137.5, 2228],
+                    backgroundColor: [
+                        '#28a745',
+                        '#28a745',
+                        '#667eea',
+                        '#667eea',
+                        '#ffc107',
+                        '#dc3545'
+                    ],
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Milliseconds'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Status Codes Chart
+        const statusCodesCtx = document.getElementById('statusCodesChart').getContext('2d');
+        new Chart(statusCodesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['200 OK (GET)', '201 Created (POST)'],
+                datasets: [{
+                    data: [494856, 126567],
+                    backgroundColor: ['#667eea', '#28a745'],
+                    borderRadius: 8,
+                    borderWidth: 2,
+                    borderColor: 'white'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

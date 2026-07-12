@@ -1,0 +1,130 @@
+<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f7fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c3cfe2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="600" fill="url(#bgGradient)"/>
+
+  <!-- Title -->
+  <text x="500" y="50" font-size="48" font-weight="bold" text-anchor="middle" fill="white">
+    Performance Test Results
+  </text>
+  <text x="500" y="90" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.9)">
+    621.4K requests | 22 minutes | 470 req/s
+  </text>
+
+  <!-- Verdict Badge -->
+  <rect x="250" y="110" width="500" height="70" rx="10" fill="#d4edda" stroke="#28a745" stroke-width="3"/>
+  <text x="500" y="160" font-size="32" font-weight="bold" text-anchor="middle" fill="#155724">
+    ✅ ARQUITETURA AGUENTA
+  </text>
+
+  <!-- Metric Cards -->
+  <!-- Card 1: Total Requests -->
+  <rect x="30" y="210" width="220" height="160" rx="10" fill="url(#cardGradient)" stroke="#667eea" stroke-width="3"/>
+  <text x="140" y="240" font-size="14" text-anchor="middle" fill="#666" font-weight="bold">
+    TOTAL REQUESTS
+  </text>
+  <text x="140" y="295" font-size="42" text-anchor="middle" fill="#333" font-weight="bold">
+    621.4K
+  </text>
+  <text x="140" y="325" font-size="12" text-anchor="middle" fill="#999">
+    sem erro
+  </text>
+
+  <!-- Card 2: Error Rate -->
+  <rect x="270" y="210" width="220" height="160" rx="10" fill="url(#cardGradient)" stroke="#28a745" stroke-width="3"/>
+  <text x="380" y="240" font-size="14" text-anchor="middle" fill="#666" font-weight="bold">
+    ERROR RATE
+  </text>
+  <text x="380" y="295" font-size="42" text-anchor="middle" fill="#28a745" font-weight="bold">
+    0.0%
+  </text>
+  <text x="380" y="325" font-size="12" text-anchor="middle" fill="#999">
+    perfeito
+  </text>
+
+  <!-- Card 3: Throughput -->
+  <rect x="510" y="210" width="220" height="160" rx="10" fill="url(#cardGradient)" stroke="#667eea" stroke-width="3"/>
+  <text x="620" y="240" font-size="14" text-anchor="middle" fill="#666" font-weight="bold">
+    THROUGHPUT
+  </text>
+  <text x="620" y="295" font-size="42" text-anchor="middle" fill="#333" font-weight="bold">
+    470
+  </text>
+  <text x="620" y="325" font-size="12" text-anchor="middle" fill="#999">
+    req/segundo
+  </text>
+
+  <!-- Card 4: P95 Latency -->
+  <rect x="750" y="210" width="220" height="160" rx="10" fill="url(#cardGradient)" stroke="#28a745" stroke-width="3"/>
+  <text x="860" y="240" font-size="14" text-anchor="middle" fill="#666" font-weight="bold">
+    P95 LATENCY
+  </text>
+  <text x="860" y="295" font-size="42" text-anchor="middle" fill="#28a745" font-weight="bold">
+    22.3ms
+  </text>
+  <text x="860" y="325" font-size="12" text-anchor="middle" fill="#999">
+    muito rápido
+  </text>
+
+  <!-- Response Time Distribution -->
+  <rect x="30" y="400" width="940" height="170" rx="10" fill="white" stroke="#ddd" stroke-width="1" opacity="0.95"/>
+
+  <text x="50" y="430" font-size="18" font-weight="bold" fill="#333">
+    📊 Response Time Distribution
+  </text>
+
+  <!-- Bars for response times -->
+  <!-- Min -->
+  <rect x="70" y="460" width="40" height="60" rx="5" fill="#28a745"/>
+  <text x="90" y="540" font-size="12" text-anchor="middle" fill="#333" font-weight="bold">Min</text>
+  <text x="90" y="555" font-size="11" text-anchor="middle" fill="#666">2.9ms</text>
+
+  <!-- P50 -->
+  <rect x="150" y="450" width="40" height="70" rx="5" fill="#28a745"/>
+  <text x="170" y="540" font-size="12" text-anchor="middle" fill="#333" font-weight="bold">P50</text>
+  <text x="170" y="555" font-size="11" text-anchor="middle" fill="#666">9.3ms</text>
+
+  <!-- Avg -->
+  <rect x="230" y="445" width="40" height="75" rx="5" fill="#667eea"/>
+  <text x="250" y="540" font-size="12" text-anchor="middle" fill="#333" font-weight="bold">Avg</text>
+  <text x="250" y="555" font-size="11" text-anchor="middle" fill="#666">18.7ms</text>
+
+  <!-- P95 -->
+  <rect x="310" y="448" width="40" height="72" rx="5" fill="#667eea"/>
+  <text x="330" y="540" font-size="12" text-anchor="middle" fill="#333" font-weight="bold">P95</text>
+  <text x="330" y="555" font-size="11" text-anchor="middle" fill="#666">22.3ms</text>
+
+  <!-- P99 -->
+  <rect x="390" y="420" width="40" height="100" rx="5" fill="#ffc107"/>
+  <text x="410" y="540" font-size="12" text-anchor="middle" fill="#333" font-weight="bold">P99</text>
+  <text x="410" y="555" font-size="11" text-anchor="middle" fill="#666">137.5ms</text>
+
+  <!-- Max -->
+  <rect x="470" y="300" width="40" height="220" rx="5" fill="#dc3545"/>
+  <text x="490" y="540" font-size="12" text-anchor="middle" fill="#333" font-weight="bold">Max</text>
+  <text x="490" y="555" font-size="11" text-anchor="middle" fill="#666">2228ms</text>
+
+  <!-- Endpoints info -->
+  <text x="580" y="480" font-size="14" font-weight="bold" fill="#333">
+    Endpoints:
+  </text>
+  <text x="580" y="505" font-size="12" fill="#666">
+    • GET /api/contacts: 494.8K req • Avg: 19.2ms
+  </text>
+  <text x="580" y="528" font-size="12" fill="#666">
+    • POST /api/contacts: 126.5K req • Avg: 16.7ms
+  </text>
+  <text x="580" y="551" font-size="12" fill="#666">
+    ✅ Zero errors on both endpoints
+  </text>
+</svg>

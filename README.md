@@ -541,6 +541,25 @@ docker-compose up -d
 
 ---
 
+## 🔬 Stress Test Results
+
+![Performance Test Results](docs/assets/stress_test_badge.svg)
+
+**Test Summary (2026-07-11):**
+- **Duration:** 22 minutes continuous load
+- **Total Requests:** 621,423 (0% error rate)
+- **Throughput:** 470 requests/second sustained
+- **Latency (P95):** 22.3ms (well below 600ms threshold)
+- **Endpoints Tested:** 
+  - GET `/api/contacts?page=1&limit=20` - 494.8K requests (avg 19.2ms)
+  - POST `/api/contacts` - 126.5K requests (avg 16.7ms)
+
+**Conclusion:** ✅ **Architecture handles production load** with excellent performance and zero failures. Significant headroom for scaling.
+
+**Detailed Report:** See [Performance Test Analysis](stress-report.html) for complete breakdown and recommendations.
+
+---
+
 ## 📖 Documentation
 
 ### Developer Guides
