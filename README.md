@@ -541,6 +541,19 @@ docker-compose up -d
 
 ---
 
+## 🎬 Application Screenshots
+
+### Desktop View - Contact List
+![Contact List - Desktop](docs/assets/screenshots/01-contact-list.png)
+
+### Full Page Layout
+![Full Page View](docs/assets/screenshots/02-full-page.png)
+
+### Mobile Responsive
+![Mobile View](docs/assets/screenshots/03-mobile-view.png)
+
+---
+
 ## 🔬 Stress Test Results
 
 ![Performance Test Results](docs/assets/stress_test_badge.svg)
