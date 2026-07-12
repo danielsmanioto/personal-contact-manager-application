@@ -1,0 +1,382 @@
+{
+  "info": {
+    "name": "Alert Service API",
+    "description": "Coleção Postman para testar endpoints do Alert Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Alerts",
+      "description": "CRUD operations para alertas",
+      "item": [
+        {
+          "name": "Create Alert",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Alert created with correct data', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('id');",
+                  "  pm.expect(jsonData.alertType).to.equal('CREATE');",
+                  "  pm.expect(jsonData.status).to.equal('PENDING');",
+                  "});",
+                  "",
+                  "// Save alert ID for other requests",
+                  "pm.environment.set('alertId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"contactName\": \"João Silva\",\n  \"contactEmail\": \"joao.silva@example.com\",\n  \"alertType\": \"CREATE\",\n  \"message\": \"Novo contacto criado com sucesso\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "alerts"
+              ]
+            },
+            "description": "Cria um novo alerta"
+          },
+          "response": []
+        },
+        {
+          "name": "List All Alerts (Paginated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has pageable structure', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('content');",
+                  "  pm.expect(jsonData).to.have.property('totalElements');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts?page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "alerts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "Lista todos os alertas com paginação"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Alert by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Alert has required fields', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property('id');",
+                  "  pm.expect(jsonData).to.have.property('contactId');",
+                  "  pm.expect(jsonData).to.have.property('status');",
+                  "  pm.expect(jsonData).to.have.property('createdAt');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts/{{alertId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "alerts",
+                "{{alertId}}"
+              ]
+            },
+            "description": "Obter alerta por ID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Filter & Search",
+      "description": "Filtro e busca de alertas",
+      "item": [
+        {
+          "name": "Get Alerts by Contact ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is array', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts/contact/550e8400-e29b-41d4-a716-446655440000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "alerts",
+                "contact",
+                "550e8400-e29b-41d4-a716-446655440000"
+              ]
+            },
+            "description": "Lista todos os alertas de um contacto específico"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Alerts by Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is array', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts/status/PENDING",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "alerts",
+                "status",
+                "PENDING"
+              ]
+            },
+            "description": "Lista alertas por status (PENDING ou PROCESSED)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Alert Actions",
+      "description": "Ações em alertas",
+      "item": [
+        {
+          "name": "Mark Alert as Processed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 204 No Content', function () {",
+                  "  pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts/{{alertId}}/mark-processed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "alerts",
+                "{{alertId}}",
+                "mark-processed"
+              ]
+            },
+            "description": "Marca um alerta como processado"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health & Documentation",
+      "description": "Health check e documentação",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Alert Service is UP', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.status).to.equal('UP');",
+                  "});",
+                  "",
+                  "pm.test('MongoDB is connected', function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.components.mongo.status).to.equal('UP');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Verifica saúde da API e conexão com MongoDB"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.environment.get('baseUrl')) {",
+          "  pm.environment.set('baseUrl', 'http://localhost:8082');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8082",
+      "type": "string",
+      "description": "Base URL do Alert Service"
+    },
+    {
+      "key": "alertId",
+      "value": "",
+      "type": "string",
+      "description": "ID do alerta (auto-preenchido)"
+    }
+  ]
+}

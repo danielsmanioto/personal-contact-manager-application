@@ -65,3 +65,15 @@ springdoc:
     tagsSorter: alpha
   api-docs:
     path: /v3/api-docs
+
+# Alert Service Configuration
+alert-service:
+  url: http://localhost:8082
+
+feign:
+  client:
+    config:
+      alert-service:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full

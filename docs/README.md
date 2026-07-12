@@ -15,6 +15,11 @@ docs/
 │   ├── endpoints.md                   # Documentação de todos os endpoints
 │   ├── postman-collection.json        # Coleção Postman pronta para usar
 │   └── POSTMAN-SETUP.md               # Guia de setup do Postman & Swagger
+├── services/
+│   ├── README.md                      # Visão geral dos microserviços
+│   └── alert-service/
+│       ├── endpoints.md               # API de alertas
+│       └── postman-collection.json    # Coleção Postman
 └── (futuros serviços)
     ├── backend-usuarios/
     ├── backend-pagamentos/
@@ -106,6 +111,31 @@ docs/
 - ✅ 15+ requisições pré-configuradas
 - ✅ Testes automáticos em cada requisição
 - ✅ Variáveis de ambiente auto-preenchidas
+
+---
+
+### 🚨 Microserviço de Alertas (Alert Service)
+
+**Arquivo:** `services/README.md` (visão geral) | `services/alert-service/endpoints.md` (detalhes)
+
+- ✅ Novo microserviço de gerenciamento de alertas
+- ✅ MongoDB como database
+- ✅ Integrado ao backend via Feign
+- ✅ Dispara alertas quando contacto é criado
+
+**Endpoints:**
+- `POST /api/alerts` - Criar alerta
+- `GET /api/alerts` - Listar alertas
+- `GET /api/alerts/{id}` - Obter alerta
+- `GET /api/alerts/contact/{id}` - Alertas por contacto
+- `GET /api/alerts/status/{status}` - Alertas por status
+- `PUT /api/alerts/{id}/mark-processed` - Marcar processado
+
+**Tech Stack:**
+- Spring Boot 3.3 + Java 21
+- Spring Data MongoDB
+- MongoDB 5.0 (NoSQL)
+- OpenAPI/Swagger
 
 ---
 

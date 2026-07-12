@@ -1,0 +1,36 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.asc
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+out/
+
+# Build
+.classpath
+.project
+.settings/
+bin/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+logs/

@@ -20,6 +20,25 @@ services:
     networks:
       - contact-manager-net
 
+  mongo:
+    image: mongo:5.0-alpine
+    container_name: alert-service-db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DB: alert_manager
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - contact-manager-net
+
   backend:
     build:
       context: ./backend
@@ -30,10 +49,30 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      ALERT_SERVICE_URL: http://alert-service:8082
     ports:
       - "8081:8080"
     depends_on:
       postgres:
+        condition: service_healthy
+      alert-service:
+        condition: service_healthy
+    networks:
+      - contact-manager-net
+    restart: unless-stopped
+
+  alert-service:
+    build:
+      context: ./services/alert-service
+      dockerfile: Dockerfile
+    container_name: alert-service
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/alert_manager
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+    depends_on:
+      mongo:
         condition: service_healthy
     networks:
       - contact-manager-net
@@ -50,12 +89,14 @@ services:
       - "80:80"
     depends_on:
       - backend
+      - alert-service
     networks:
       - contact-manager-net
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  mongo_data:
 
 networks:
   contact-manager-net:
