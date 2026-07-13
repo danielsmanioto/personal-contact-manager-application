@@ -64,7 +64,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({
         label="Name"
         name="name"
         value={formData.name}
-        onChange={(value) => setFormData({ ...formData, name: value })}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
         error={errors.name}
         required
       />
@@ -74,7 +74,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({
         name="email"
         type="email"
         value={formData.email}
-        onChange={(value) => setFormData({ ...formData, email: value })}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
         error={errors.email}
       />
 
@@ -83,7 +83,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({
         name="phone"
         type="tel"
         value={formData.phone}
-        onChange={(value) => setFormData({ ...formData, phone: value })}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
         error={errors.phone}
       />
 
@@ -91,7 +91,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({
         label="Notes"
         name="notes"
         value={formData.notes}
-        onChange={(value) => setFormData({ ...formData, notes: value })}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, notes: e.target.value })}
         error={errors.notes}
       />
 

@@ -82,8 +82,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: http://localhost:8081/api
     container_name: contact-manager-frontend
     ports:
       - "80:80"
