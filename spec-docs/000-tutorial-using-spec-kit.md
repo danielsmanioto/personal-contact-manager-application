@@ -2,6 +2,14 @@
 
 **Reference:** https://github.com/github/spec-kit
 
+Fluxo SDD
+
+--- 
+
+- PRD (um por feature)
+- Spec
+- Tasks
+
 ---
 
 ## Step 1: Generate Task/PRD with Specifications
