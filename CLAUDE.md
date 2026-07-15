@@ -660,5 +660,9 @@ docker build -t contact-manager-frontend:latest frontend/
 ---
 
 <!-- SPECKIT START -->
-**Current Feature Plan**: [specs/003-create-contact/plan.md](specs/003-create-contact/plan.md) — Create Contact with Validated Form (in-progress)
+**Current Feature Plan**: [specs/005-togglz-feature-flags/plan.md](specs/005-togglz-feature-flags/plan.md) — Runtime Feature Flags with Togglz (planning phase)
+
+**Previous Plans**:
+- [specs/004-perf-chaos-testing/plan.md](specs/004-perf-chaos-testing/plan.md) — Performance & Chaos Testing (completed)
+- [specs/003-create-contact/plan.md](specs/003-create-contact/plan.md) — Create Contact with Validated Form (completed)
 <!-- SPECKIT END -->
